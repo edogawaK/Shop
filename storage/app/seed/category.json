@@ -1,0 +1,35 @@
+[
+    {
+        "category": "Áo nam",
+        "child": [
+            "Áo sơ mi",
+            "Áo polo",
+            "Áo T-Shirt",
+            "Áo khoác",
+            "Áo len",
+            "Áo thun dài tay",
+            "Áo blazer"
+        ]
+    },
+    {
+        "category": "Quần nam",
+        "child": [
+            "Quần âu",
+            "Quần kaki",
+            "Quần Short",
+            "Quần jeans",
+            "Quần thể thao"
+        ]
+    },
+    {
+        "category": "Phụ kiện & Suit",
+        "child": [
+		"Bộ suit",
+            "Thắt lưng",
+            "Ví nam",
+            "Cà vạt",
+            "Cặp da",
+            "Giày da"
+        ]
+    }
+]
