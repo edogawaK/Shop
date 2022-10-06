@@ -28,6 +28,9 @@ return new class extends Migration
         Schema::table('admin', function (Blueprint $table) {
             $table->softDeletes();
         });
+        Schema::table('product', function (Blueprint $table) {
+            $table->softDeletes();
+        });
     }
 
     /**
@@ -38,6 +41,21 @@ return new class extends Migration
     public function down()
     {
         Schema::table('user', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('order', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('size', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('category', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('admin', function (Blueprint $table) {
+            $table->dropSoftDeletes();
+        });
+        Schema::table('product', function (Blueprint $table) {
             $table->dropSoftDeletes();
         });
     }
