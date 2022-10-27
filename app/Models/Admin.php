@@ -9,8 +9,17 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Admin extends Model
 {
     use HasFactory, SoftDeletes;
+
+    const COL_ID = 'admin_id';
+    const COL_NAME = 'admin_name';
+    const COL_PHONE = 'admin_phone';
+    const COL_EMAIL = 'admin_email';
+    const COL_PASSWORD = 'admin_password';
+    const COL_ROLE = 'admin_role';
+    const COL_STATUS = 'admin_status';
+
     public $table = "admin";
-    public $primaryKey = "admin_id";
+    public $primaryKey = self::COL_ID;
     public $timestamps = false;
-    public $guarded = [];
+
 }

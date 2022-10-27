@@ -26,31 +26,30 @@ class CoreProvider extends ServiceProvider
         //
     }
 
-    public $singletons=[
+    public $singletons = [
         //models
-        'user'=>\App\Models\User::class,
-        'product'=>\App\Models\Product::class,
-        'size'=>\App\Models\Size::class,
-        'sale'=>\App\Models\Sale::class,
-        'admin'=>\App\Models\Admin::class,
-        'locate'=>\App\Models\Locate::class,
-        'order'=>\App\Models\Order::class,
-        'category'=>\App\Models\Category::class,
-        'rate'=>\App\Models\Rate::class,
-
-        //repositories
-        'user'=>\App\Models\User::class,
-        'product'=>\App\Models\Product::class,
-        'size'=>\App\Models\Size::class,
-        'sale'=>\App\Models\Sale::class,
-        'admin'=>\App\Models\Admin::class,
-        'locate'=>\App\Models\Locate::class,
-        'order'=>\App\Models\Order::class,
-        'category'=>\App\Models\Category::class,
-        'rate'=>\App\Models\Rate::class,
+        'User' => \App\Models\User::class,
+        'Product' => \App\Models\Product::class,
+        'Size' => \App\Models\Size::class,
+        'Sale' => \App\Models\Sale::class,
+        'Admin' => \App\Models\Admin::class,
+        'Locate' => \App\Models\Locate::class,
+        'Order' => \App\Models\Order::class,
+        'Category' => \App\Models\Category::class,
+        'Rate' => \App\Models\Rate::class,
     ];
 
-    public $bindings=[
-        //
+    public $bindings = [
+        //repositories
+        'UserRepository' => \App\Repositories\UserRepository::class,
+        'ProductRepository' => \App\Repositories\ProductRepository::class,
+        'CategoryRepository' => \App\Repositories\CategoryRepository::class,
+        'LocateRepository' => \App\Repositories\LocateRepository::class,
+        'RateRepository' => \App\Repositories\RateRepository::class,
+        'SizeRepository' => \App\Repositories\SizeRepository::class,
+        'OrderRepository' => \App\Repositories\OrderRepository::class,
+        'SaleRepository' => \App\Repositories\SaleRepository::class,
+        'BaseRepository' => \App\Repositories\BaseRepository::class,
+        'CartRepository' => \App\Repositories\CartRepository::class,
     ];
 }

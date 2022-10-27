@@ -3,8 +3,9 @@
 namespace App\Repositories;
 
 use App\Models\User;
+use Illuminate\Support\Facades\Auth;
 
-class SizeRepository extends BaseRepository
+class UserRepository extends BaseRepository
 {
     public function __construct(User $model)
     {

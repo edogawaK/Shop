@@ -176,12 +176,11 @@ return new class extends Migration
         });
 
         Schema::create('cart', function (Blueprint $table) {
+            $table->increments('cart_id');
+            $table->integer('cart_quantity');
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('size_id');
-            $table->integer('cart_quantity');
-
-            $table->primary(['user_id','product_id','size_id']);
 
             $table->foreign('product_id')->references('product_id')->on('product');
             $table->foreign('size_id')->references('size_id')->on('size');

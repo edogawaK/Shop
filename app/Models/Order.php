@@ -10,18 +10,27 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Order extends Model
 {
     use HasFactory, SoftDeletes;
+
+    const COL_ID = 'order_id';
+    const COL_DATE = 'order_date';
+    const COL_RECEIVE = 'order_receive';
+    const COL_SHIP = 'order_ship';
+    const COL_TOTAL = 'order_total';
+    const COL_STATUS = 'order_status';
+    const COL_USER = 'user_id';
+    const COL_LOCATE = 'locate_id';
+
     public $table = "order";
-    public $primaryKey = "order_id";
+    public $primaryKey = self::COL_ID;
     public $timestamps = false;
-    public $guarded = [];
 
     public function products()
     {
-        return $this->belongsToMany(Product::class, 'order_detail', 'order_id', 'product_id')->withPivot(['size_id', 'quantity']);
+        return $this->belongsToMany(Product::class, 'order_detail', self::COL_ID, Product::COL_ID)->withPivot([Size::COL_ID, 'quantity']);
     }
 
     public function locate()
     {
-        return $this->belongsTo(Locate::class, 'locate_id', 'locate_id');
+        return $this->belongsTo(Locate::class, self::COL_LOCATE, Locate::COL_ID);
     }
 }

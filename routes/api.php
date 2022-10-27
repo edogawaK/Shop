@@ -1,8 +1,10 @@
 <?php
 
-use App\Exceptions\RepositoryException;
-use App\Repositories\ProductRepository;
-use Illuminate\Http\Request;
+use App\Http\Controllers\Public\AuthController;
+use App\Http\Controllers\Public\CartController;
+use App\Http\Controllers\Public\CategoryController;
+use App\Http\Controllers\Public\ProductController;
+use App\Http\Controllers\Public\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -14,12 +16,25 @@ use Illuminate\Support\Facades\Route;
 | routes are loaded by the RouteServiceProvider within a group which
 | is assigned the "api" middleware group. Enjoy building your API!
 |
-*/
+ */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::get('/nkkn',function(){
-    throw new Exception("ai no");
+//---------------------------------------------public route
+Route::group([], function () {
+
+    Route::apiResource('products', ProductController::class)->only(['index', 'show']);
+
+    Route::apiResource('cart', CartController::class)->only(['index', 'update', 'store', 'destroy']);
+
+    Route::apiResource('categories', CategoryController::class)->only(['index']);
+
+    Route::apiResource('profile', UserController::class)->only(['show', 'update']);
+
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('signin', [AuthController::class, 'signin']);
+        Route::post('signup', [AuthController::class, 'signup']);
+        // Route::post('forgot', [AuthController::class, 'forgot']);
+        // Route::put('reset', [AuthController::class, 'reset']);
+    });
+
 });

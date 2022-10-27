@@ -9,8 +9,11 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 class Size extends Model
 {
     use HasFactory, SoftDeletes;
-    public $table="size";
-    public $primaryKey="size_id";
-    public $timestamps=false;
-    public $guarded=[];
+    const COL_ID = 'size_id';
+    const COL_NAME = 'size_name';
+    const COL_STATUS = 'size_status';
+
+    public $table = "size";
+    public $primaryKey = self::COL_ID;
+    public $timestamps = false;
 }

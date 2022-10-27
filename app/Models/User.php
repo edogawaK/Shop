@@ -4,10 +4,10 @@ namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
-use Illuminate\Database\Eloquent\SoftDeletes;
 
 class User extends Authenticatable
 {
@@ -18,29 +18,46 @@ class User extends Authenticatable
      *
      * @var array<int, string>
      */
-    public $table = "user";
-    public $primaryKey = "user_id";
-    public $timestamps = false;
-    public $guarded = [];
-    protected $hidden = [
-        'user_password',
-    ];
-    // protected $casts = [
-    //     'email_verified_at' => 'datetime',
-    // ];
+    public const COL_ID = 'user_id';
+    public const COL_NAME = 'user_name';
+    public const COL_PASSWORD = 'user_password';
+    public const COL_EMAIL = 'user_email';
+    public const COL_LOCATE = 'locate_id';
+    public const COL_POINT = 'user_point';
+    public const COL_STATUS = 'user_status';
 
-    public function cart()
+    public $table = "user";
+    public $primaryKey = self::COL_ID;
+    public $timestamps = false;
+    public $fillable = [
+        self::COL_NAME,
+        self::COL_PASSWORD,
+        self::COL_EMAIL,
+        self::COL_LOCATE,
+    ];
+
+    protected $hidden = [
+        self::COL_PASSWORD,
+    ];
+
+    public function carts()
     {
-        return $this->belongsToMany(Product::class, 'cart', 'user_id', 'product_id')->withPivot(['size_id', 'cart_quantity']);
+        return $this->hasMany(Cart::class, Cart::COL_USER, self::COL_ID);
+        // return $this->belongsToMany(Product::class, 'cart', 'user_id', 'product_id')->withPivot(['size_id', 'cart_quantity']);
     }
 
     public function orders()
     {
-        return $this->hasMany(Order::class, 'user_id', 'user_id');
+        return $this->hasMany(Order::class, Order::COL_USER, self::COL_ID);
     }
 
     public function locates()
     {
-        return $this->belongsTo(Locate::class, 'locate_id', 'locate_id');
+        return $this->belongsTo(Locate::class, self::COL_LOCATE, Locate::COL_ID);
+    }
+
+    public function getAuthPassword()
+    {
+        return $this->user_password;
     }
 }
