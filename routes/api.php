@@ -3,7 +3,9 @@
 use App\Http\Controllers\Public\AuthController;
 use App\Http\Controllers\Public\CartController;
 use App\Http\Controllers\Public\CategoryController;
+use App\Http\Controllers\Public\OrderController;
 use App\Http\Controllers\Public\ProductController;
+use App\Http\Controllers\Public\RateController;
 use App\Http\Controllers\Public\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -18,15 +20,21 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-
 //---------------------------------------------public route
 Route::group([], function () {
 
     Route::apiResource('products', ProductController::class)->only(['index', 'show']);
 
-    Route::apiResource('cart', CartController::class)->only(['index', 'update', 'store', 'destroy']);
+    Route::apiResource('products.rates', RateController::class)->only(['index', 'store', 'update', 'destroy'])->parameters([
+        'products' => 'productId',
+        'rates'=>'id',
+    ]);
 
     Route::apiResource('categories', CategoryController::class)->only(['index']);
+
+    Route::apiResource('cart', CartController::class)->only(['index', 'update', 'store', 'destroy']);
+
+    Route::apiResource('orders', OrderController::class)->only(['index', 'update', 'store', 'destroy']);
 
     Route::apiResource('profile', UserController::class)->only(['show', 'update']);
 

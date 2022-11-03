@@ -23,6 +23,16 @@ class Order extends Model
     public $table = "order";
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
+    public $fillable = [
+        self::COL_ID,
+        self::COL_DATE,
+        self::COL_RECEIVE,
+        self::COL_SHIP,
+        self::COL_TOTAL,
+        self::COL_STATUS,
+        self::COL_USER,
+        self::COL_LOCATE,
+    ];
 
     public function products()
     {
@@ -32,5 +42,10 @@ class Order extends Model
     public function locate()
     {
         return $this->belongsTo(Locate::class, self::COL_LOCATE, Locate::COL_ID);
+    }
+
+    public function detail()
+    {
+        return $this->hasMany(OrderDetail::class, OrderDetail::COL_ORDER, self::COL_ID);
     }
 }

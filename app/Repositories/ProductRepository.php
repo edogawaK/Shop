@@ -5,12 +5,18 @@ namespace App\Repositories;
 use App\Http\Resources\Public\ProductResource;
 use App\Models\Product;
 use App\Models\Size;
+use Error;
 use Exception;
 
 class ProductRepository
 {
+    const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
+    const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
+    const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
 
-    public function getDetail($id, $trict = false)
+    private $pageSize=10;
+
+    public function getProductDetail($id)
     {
         $product = Product::find($id);
         $product->sizes;
@@ -18,7 +24,7 @@ class ProductRepository
         return new ProductResource($product);
     }
 
-    public function all($options = ['filters' => [], 'sort' => null, 'sortMode' => null])
+    public function getAll($options = ['filters' => [], 'sort' => null, 'sortMode' => null])
     {
         $query = new Product();
 
@@ -37,76 +43,85 @@ class ProductRepository
         return ProductResource::collection($data);
     }
 
-    public function isAvailable($id)
+    // public function isAvailableProduct($id)
+    // {
+    //     $sizes = Product::find($id)->sizes;
+
+    //     foreach ($sizes as $size => $amount) {
+    //         if ($amount > 0) {
+    //             return true;
+    //         }
+    //     }
+
+    //     return false;
+    // }
+
+    public function isAvailable(int $id, int $sizeId, int $quantity)
     {
-        $sizes = Product::find($id)->sizes;
-
-        foreach ($sizes as $size => $amount) {
-            if ($amount > 0) {
-                return true;
-            }
-        }
-
-        return false;
+        $currentQuantity = $this->getQuantity($id, $sizeId);
+        $newQuantity = $currentQuantity - $quantity;
+        return $newQuantity >= 0;
     }
 
-    public function getQuantity($id, $sizeID)
+    public function getQuantity(int $id, int $sizeId)
     {
-        $tockInfo = Product::find($id)->size($sizeID)->get()[0];
-        if ($tockInfo) {
-            return $tockInfo->pivot->quantity;
+        $product = $this->getProduct($id);
+        $sizeInfo = $this->getSizeInfo($product, $sizeId);
+
+        if ($sizeInfo) {
+            return $sizeInfo->pivot->quantity;
         }
         throw new Exception('Product have not this Size');
     }
 
-    public function update($data)
+    public function updateProduct($id, $data)
     {
-        $product = Product::find($data[Product::COL_ID]);
+        $product = Product::find($id);
 
-        if (isset($data[Product::COL_CATEGORY])) {
-            $product[Product::COL_CATEGORY] = $data[Product::COL_CATEGORY];
-        }
-        if (isset($data[Product::COL_COST])) {
-            $product[Product::COL_COST] = $data[Product::COL_COST];
-        }
-        if (isset($data[Product::COL_DESC])) {
-            $product[Product::COL_DESC] = $data[Product::COL_DESC];
-        }
-        if (isset($data[Product::COL_NAME])) {
-            $product[Product::COL_NAME] = $data[Product::COL_NAME];
-        }
-        if (isset($data[Product::COL_PRICE])) {
-            $product[Product::COL_PRICE] = $data[Product::COL_PRICE];
-        }
-        if (isset($data[Product::COL_SALE])) {
-            $product[Product::COL_SALE] = $data[Product::COL_SALE];
-        }
-        if (isset($data[Product::COL_STATUS])) {
-            $product[Product::COL_STATUS] = $data[Product::COL_STATUS];
-        }
+        $product->update($data);
+
         if ($data['quantity'] && $data['size']) {
             if (!$this->updateQuantity($data[Product::COL_ID], $data['size'], $data['quantity'])) {
                 throw new Exception("khong the cap nhat sl");
             }
         }
 
-        return $product->save();
+        return true;
     }
 
-    public function updateQuantity($id, $sizeID, $quantity)
+    public function updateQuantity(int $id, int $sizeId, int $quantity, string $mode = self::UPDATE_QUANTITY)
+    {
+        $product = $this->getProduct($id);
+        $sizeInfo = $this->getSizeInfo($product, $sizeId);
+
+        switch ($mode) {
+            case self::INCREASE_QUANTITY:
+                $sizeInfo->pivot->quantity += $quantity;
+                break;
+            case self::DECREASE_QUANTITY:
+                $sizeInfo->pivot->quantity -= $quantity;
+                break;
+            default:
+                $sizeInfo->pivot->quantity = $quantity;
+        }
+        return $sizeInfo->pivot->save();
+    }
+
+    private function getProduct($id)
     {
         $product = Product::find($id);
         if (!$product) {
-            throw new Exception("KHONG_TIM_THAY_SP");
+            throw new Error('Không tìm thấy sản phẩm');
         }
+        return $product;
+    }
 
-        $sizeInfo = $product->size($sizeID)->get()[0];
+    private function getSizeInfo(Product $product, int $sizeId)
+    {
+        $sizeInfo = $product->size($sizeId)->get()[0];
         if (!$sizeInfo) {
             throw new Exception("KHONG TIM THAY THONG TIN SIZE");
         }
-
-        $sizeInfo->pivot->quantity = $quantity;
-
-        return $sizeInfo->pivot->save();
+        return $sizeInfo;
     }
 }

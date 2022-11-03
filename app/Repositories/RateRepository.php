@@ -2,12 +2,28 @@
 
 namespace App\Repositories;
 
+use App\Models\Product;
 use App\Models\Rate;
 
-class RateRepository extends BaseRepository
+class RateRepository
 {
-    public function __construct(Rate $model)
+    public function getAllByProduct($productId)
     {
-        parent::__construct($model);
+        return Product::find($productId)->rates;
+    }
+
+    public function updateRate($id, $data)
+    {
+        return Rate::find($id)->update($data);
+    }
+
+    public function createRate($data)
+    {
+        return Rate::create($data);
+    }
+
+    public function deleteRate($id)
+    {
+        return Rate::find($id)->delete();
     }
 }

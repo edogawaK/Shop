@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 
 class ProductController extends Controller
@@ -26,12 +27,13 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
+        $productRepository = new ProductRepository();
         $this->attachFilter($request);
         $this->attachSort($request);
-        return app('ProductRepository')->all([
-            'filters'=>$this->filters,
-            'sort'=>$this->sort,
-            'sortMode'=>$this->sortMode,
+        return $productRepository->getAll([
+            'filters' => $this->filters,
+            'sort' => $this->sort,
+            'sortMode' => $this->sortMode,
         ]);
     }
 
@@ -88,7 +90,7 @@ class ProductController extends Controller
     public function show($id)
     {
         return $this->response(
-            ['data' => app('ProductRepository')->getDetail($id)]
+            ['data' => app('ProductRepository')->getProductDetail($id)]
         );
     }
 

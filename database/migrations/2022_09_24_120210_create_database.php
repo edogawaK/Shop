@@ -3,7 +3,6 @@
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
-use SebastianBergmann\Type\NullType;
 
 return new class extends Migration
 {
@@ -99,8 +98,7 @@ return new class extends Migration
             $table->increments('order_id');
             $table->dateTime('order_date')->useCurrent();
             $table->dateTime('order_receive')->useCurrent();
-            $table->double('order_ship');
-            $table->double('order_total');
+            $table->double('order_total')->default(0);
             $table->integer('order_status')->default(1);
             $table->unsignedInteger('user_id');
             $table->unsignedInteger('locate_id');
@@ -114,8 +112,6 @@ return new class extends Migration
             $table->string('size_name');
             $table->integer('size_status')->default(1);
         });
-
-        
 
         Schema::create('image', function (Blueprint $table) {
             $table->increments('image_id');
@@ -136,8 +132,6 @@ return new class extends Migration
             $table->foreign('size_id')->references('size_id')->on('size');
         });
 
-        
-
         // Schema::create('notification', function (Blueprint $table) {
         //     $table->increments('notification_id');
         //     $table->integer('notification_desc');
@@ -151,7 +145,6 @@ return new class extends Migration
         //     $table->foreign('admin_id')->references('admin_id')->on('admin');
         // });
 
-
         Schema::create('rate', function (Blueprint $table) {
             $table->increments('rate_id');
             $table->string('rate_content');
@@ -163,12 +156,11 @@ return new class extends Migration
         });
 
         Schema::create('order_detail', function (Blueprint $table) {
+            $table->increments('order_detail_id');
+            $table->integer('order_detail_quantity');
             $table->unsignedInteger('order_id');
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('size_id');
-            $table->integer('quantity');
-
-            $table->primary(['order_id','product_id','size_id']);
 
             $table->foreign('product_id')->references('product_id')->on('product');
             $table->foreign('size_id')->references('size_id')->on('size');

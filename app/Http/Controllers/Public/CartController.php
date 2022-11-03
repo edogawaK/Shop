@@ -5,8 +5,6 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\CartRequest;
 use App\Models\Cart;
-use App\Models\Product;
-use App\Models\User;
 use App\Repositories\CartRepository;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -24,7 +22,7 @@ class CartController extends Controller
      */
     public function index(Request $request)
     {
-        return $this->response(['data' => app('CartRepository')->all($request->user()->user_id)]);
+        return $this->response(['data' => App::make(CartRepository::class)->all($request->user()->user_id)]);
     }
 
     /**
@@ -35,15 +33,14 @@ class CartController extends Controller
      */
     public function store(CartRequest $request)
     {
-        $data = app('CartRepository')->addToCart(
+        $cartRepository=new CartRepository();
+        $data = $cartRepository->addToCart(
             [
                 Cart::COL_USER => $request->user()->user_id,
-                Cart::COL_PRODUCT => $request['product'],
-                Cart::COL_SIZE => $request['size'],
+                Cart::COL_PRODUCT => $request['productId'],
+                Cart::COL_SIZE => $request['sizeId'],
                 Cart::COL_QUANTITY => $request['quantity'],
             ]);
-        $product = Product::find(1);
-
         return $this->response([
             'data' => $data,
         ]);
@@ -70,13 +67,13 @@ class CartController extends Controller
     public function update(Request $request, $id)
     {
         $data = array_filter([
-            Cart::COL_ID=>$id,
+            Cart::COL_ID => $id,
             Cart::COL_QUANTITY => $request->quantity ?? null,
             Cart::COL_SIZE => $request->size ?? null,
         ]);
 
         return $this->response([
-            'data' => app('CartRepository')->updateCart($data),
+            'data' => App::make(CartRepository::class)->updateCart($data),
         ]);
     }
 
