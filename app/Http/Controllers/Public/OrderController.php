@@ -8,6 +8,7 @@ use App\Models\OrderDetail;
 use App\Models\User;
 use App\Repositories\OrderRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -23,7 +24,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $orderRepository = new OrderRepository();
-        return $this->response(['data' => $orderRepository->getAllByUser($request->user()->{User::COL_ID})]);
+        return $this->response(['data' => $orderRepository->getOrders($request->user()->{User::COL_ID})]);
     }
 
     /**
@@ -34,8 +35,8 @@ class OrderController extends Controller
      */
     public function store(Request $request)
     {
-        $userID = $request->user()->{User::COL_ID};
         $orderRepository = new OrderRepository();
+        $userID = $request->user()->{User::COL_ID};
         $orderData = [
             Order::COL_USER => $request->user()->{User::COL_ID},
             Order::COL_LOCATE => $request['locateId'],
@@ -51,7 +52,7 @@ class OrderController extends Controller
             ];
         }
 
-        $data = $orderRepository->createOrder($orderData, $detailData);
+        $data = $orderRepository->storeOrder($orderData, $detailData);
 
         return $this->response([
             'data' => $data,
@@ -66,7 +67,12 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        //
+        $orderRepository = new OrderRepository();
+        
+        $data=$orderRepository->getOrder($id);
+        return $this->response([
+            'data'=>$data,
+        ]);
     }
 
     /**

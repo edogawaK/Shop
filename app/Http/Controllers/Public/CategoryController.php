@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Repositories\CategoryRepository;
 use Illuminate\Http\Request;
 
 class CategoryController extends Controller
@@ -14,18 +16,23 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        return app('CategoryRepository')->all();
+        $categoryRepository = new CategoryRepository();
+        return $categoryRepository->getCategories();
     }
 
     /**
      * Store a newly created resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @return \Illuminate\Http\Responsesfffdd
      */
     public function store(Request $request)
     {
-        //
+        $categoryRepository = new CategoryRepository();
+        return $categoryRepository->storeCategory([
+            Category::COL_NAME=>$request->name,
+            Category::COL_PARENT=>$request->parent,
+        ]);
     }
 
     /**

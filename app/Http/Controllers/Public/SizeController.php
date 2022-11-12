@@ -3,27 +3,22 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Public\Cart\StoreCartRequest;
-use App\Http\Requests\Public\Cart\UpdateCartRequest;
-use App\Models\User;
-use App\Repositories\CartRepository;
+use App\Http\Requests\Public\Size\StoreSizeRequest;
+use App\Repositories\SizeRepository;
 use Illuminate\Http\Request;
 
-class CartController extends Controller
+class SizeController extends Controller
 {
-    public function __construct()
-    {
-        $this->middleware('auth:sanctum');
-    }
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Request $request)
+    public function index(Request $request, $productId)
     {
-        $cartRepository = new CartRepository();
-        return $this->response(['data' => $cartRepository->getCart($request->user()->user_id)]);
+        $sizeRepository = new SizeRepository();
+        $result = $sizeRepository->getSizes();
+        return $this->response(['data' => $result]);
     }
 
     /**
@@ -32,13 +27,12 @@ class CartController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(StoreCartRequest $request)
+    public function store(StoreSizeRequest $request)
     {
-        $cartRepository = new CartRepository();
+        $sizeRepository = new SizeRepository();
         $requestData = $request->convert();
-        $requestData[User::COL_ID]=$request->user()->{User::COL_ID};
-        $result = $cartRepository->addToCart($requestData);
 
+        $result = $sizeRepository->storeSize($requestData);
         return $this->response([
             'data' => $result,
         ]);
@@ -62,13 +56,12 @@ class CartController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(UpdateCartRequest $request, $id)
+    public function update(Request $request, $id)
     {
-        $cartRepository = new CartRepository();
+        $sizeRepository = new SizeRepository();
         $requestData = $request->convert();
 
-        $result = $cartRepository->updateCart($requestData);
-
+        $result = $sizeRepository->updateSize($id, $requestData);
         return $this->response([
             'data' => $result,
         ]);
@@ -82,12 +75,10 @@ class CartController extends Controller
      */
     public function destroy($id)
     {
-        $cartRepository = new CartRepository();
-
-        $result = $cartRepository->removeFromCart($id);
-
+        $sizeRepository = new SizeRepository();
+        $result=$sizeRepository->destroySize($id);
         return $this->response([
-            'data' => $result,
+            'data'=>$result
         ]);
     }
 }

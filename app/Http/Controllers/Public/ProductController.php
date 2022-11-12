@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Models\Category;
+use App\Models\Product;
 use App\Repositories\ProductRepository;
 use Illuminate\Http\Request;
 
@@ -13,13 +15,7 @@ class ProductController extends Controller
     private const SORT_DATE = 'date';
     private const SORT_DESC = 'desc';
     private const SORT_ASC = 'asc';
-    private const PRICE = 'product_price';
-    private const DATE = 'product_date';
-    private const SOLD = 'product_sold';
 
-    private $filters = [];
-    private $sort = null;
-    private $sortMode = SORT_ASC;
     /**
      * Display a listing of the resource.
      *
@@ -28,46 +24,53 @@ class ProductController extends Controller
     public function index(Request $request)
     {
         $productRepository = new ProductRepository();
-        $this->attachFilter($request);
-        $this->attachSort($request);
-        return $productRepository->getAll([
-            'filters' => $this->filters,
-            'sort' => $this->sort,
-            'sortMode' => $this->sortMode,
+        $filterRules = $this->convertFilter($request);
+        $sortRules = $this->convertSort($request);
+        return $productRepository->getProducts([
+            // 'filters' => $filterRules,
+            'sort' => $sortRules['rules'],
+            'sortMode' => $sortRules['mode'],
         ]);
     }
 
-    private function attachFilter(Request $request)
+    private function convertFilter(Request $request)
     {
+        $filterRules = [];
         if ($request->category) {
-            $this->filters[] = ['category_id', '=', $request->category];
+            $filterRules[] = [Category::COL_ID, '=', $request->category];
         }
         if ($request->maxPrice) {
-            $this->filters[] = ['product_price', '<=', $request->maxPrice];
+            $filterRules[] = [Product::COL_PRICE, '<=', $request->maxPrice];
         }
         if ($request->minPrice) {
-            $this->filters[] = ['product_price', '>=', $request->minPrice];
+            $filterRules[] = [Product::COL_PRICE, '>=', $request->minPrice];
         }
+        return $filterRules;
     }
 
-    private function attachSort(Request $request)
+    private function convertSort(Request $request)
     {
+        $sortRules = [
+            'rules' => null,
+            'mode' => null,
+        ];
         if ($request->sort) {
             switch ($request->sort) {
-                case $this->SORT_PRICE:
-                    $this->sort = $this->PRODUCT_PRICE;
-                    $this->sortMode = $request->sortMode ?? $this->SORT_ASC;
+                case self::SORT_PRICE:
+                    $sortRules['rules'] = Product::COL_PRICE;
+                    $sortRules['mode'] = $request->sortMode ?? self::SORT_ASC;
                     break;
-                case $this->SORT_DATE:
-                    $this->sort = $this->PRODUCT_PRICE;
-                    $this->sortMode = $request->sortMode ?? $this->SORT_ASC;
+                case self::SORT_DATE:
+                    $sortRules['rules'] = Product::COL_DATE;
+                    $sortRules['mode'] = $request->sortMode ?? self::SORT_ASC;
                     break;
-                case $this->SORT_SOLD:
-                    $this->sort = $this->PRODUCT_PRICE;
-                    $this->sortMode = $request->sortMode ?? $this->SORT_ASC;
+                case self::SORT_SOLD:
+                    $sortRules['rules'] = Product::COL_SOLD;
+                    $sortRules['mode'] = $request->sortMode ?? self::SORT_ASC;
                     break;
             }
         }
+        return $sortRules;
     }
 
     /**
@@ -89,8 +92,9 @@ class ProductController extends Controller
      */
     public function show($id)
     {
+        $productRepository = new ProductRepository();
         return $this->response(
-            ['data' => app('ProductRepository')->getProductDetail($id)]
+            ['data' => $productRepository->getProductDetail($id)]
         );
     }
 

@@ -151,8 +151,13 @@ return new class extends Migration
             $table->integer('rate_point');
             $table->dateTime('rate_date')->useCurrent();
             $table->unsignedInteger('product_id');
+            $table->unsignedInteger('user_id');
+            $table->unsignedInteger('order_id');
 
             $table->foreign('product_id')->references('product_id')->on('product');
+            $table->foreign('order_id')->references('order_id')->on('order');
+            $table->foreign('user_id')->references('user_id')->on('user');
+
         });
 
         Schema::create('order_detail', function (Blueprint $table) {

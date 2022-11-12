@@ -2,12 +2,14 @@
 
 namespace App\Http\Requests\Public\Auth;
 
+use App\Http\Requests\Public\Auth\AuthConvert;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
 
 class SignupRequest extends FormRequest
 {
+    use AuthConvert;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -40,18 +42,18 @@ class SignupRequest extends FormRequest
         ];
     }
 
-    public function convert()
-    {
-        return [
-            'user_email' => $this->email,
-            'user_name' => $this->name,
-            'user_password' => bcrypt($this->password),
-            'locate_city' => $this->city,
-            'locate_district' => $this->district,
-            'locate_ward' => $this->ward,
-            'locate_phone' => $this->phone,
-            'locate_street' => $this->street,
-            'locate_receiver'=>$this->name,
-        ];
-    }
+    // public function convert()
+    // {
+    //     return [
+    //         'user_email' => $this->email,
+    //         'user_name' => $this->name,
+    //         'user_password' => bcrypt($this->password),
+    //         'locate_city' => $this->city,
+    //         'locate_district' => $this->district,
+    //         'locate_ward' => $this->ward,
+    //         'locate_phone' => $this->phone,
+    //         'locate_street' => $this->street,
+    //         'locate_receiver'=>$this->name,
+    //     ];
+    // }
 }

@@ -10,11 +10,13 @@ use Exception;
 
 class ProductRepository
 {
+    use Effects;
+
     const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
     const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
     const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
 
-    private $pageSize=10;
+    private $pageSize = 10;
 
     public function getProductDetail($id)
     {
@@ -24,37 +26,32 @@ class ProductRepository
         return new ProductResource($product);
     }
 
-    public function getAll($options = ['filters' => [], 'sort' => null, 'sortMode' => null])
+    public function getProducts($option)
     {
         $query = new Product();
+        $query = $query->where(Product::COL_STATUS, 1);
 
-        if ($options['filters']) {
-            foreach ($options['filters'] as $filter) {
-                $query = $query->where(...$filter);
-            }
-        }
-
-        if ($options['sort']) {
-            $query = $query->orderBy($options['sort'], $options['sortMode']);
-        }
+        $query = $this->attachFilter($query, $option['filters'] ?? null);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? null);
 
         $data = $query->paginate($this->pageSize);
-
         return ProductResource::collection($data);
     }
 
-    // public function isAvailableProduct($id)
-    // {
-    //     $sizes = Product::find($id)->sizes;
+    public function isRunOut(Product $product)
+    {
+        $sizes = $product->sizes;
 
-    //     foreach ($sizes as $size => $amount) {
-    //         if ($amount > 0) {
-    //             return true;
-    //         }
-    //     }
+        foreach ($sizes as $size => $amount) {
+            if ($amount > 0) {
+                return false;
+            }
+        }
 
-    //     return false;
-    // }
+        $product->status = 0;
+        $product->save();
+        return true;
+    }
 
     public function isAvailable(int $id, int $sizeId, int $quantity)
     {
@@ -65,7 +62,7 @@ class ProductRepository
 
     public function getQuantity(int $id, int $sizeId)
     {
-        $product = $this->getProduct($id);
+        $product = $this->getProductModel($id);
         $sizeInfo = $this->getSizeInfo($product, $sizeId);
 
         if ($sizeInfo) {
@@ -91,7 +88,7 @@ class ProductRepository
 
     public function updateQuantity(int $id, int $sizeId, int $quantity, string $mode = self::UPDATE_QUANTITY)
     {
-        $product = $this->getProduct($id);
+        $product = $this->getProductModel($id);
         $sizeInfo = $this->getSizeInfo($product, $sizeId);
 
         switch ($mode) {
@@ -107,7 +104,7 @@ class ProductRepository
         return $sizeInfo->pivot->save();
     }
 
-    private function getProduct($id)
+    public function getProductModel($id)
     {
         $product = Product::find($id);
         if (!$product) {

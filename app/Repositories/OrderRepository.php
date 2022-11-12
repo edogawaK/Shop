@@ -12,32 +12,20 @@ use Illuminate\Support\Facades\DB;
 
 class OrderRepository
 {
-
-    public function all($options = ['filters' => [], 'sort' => null, 'sortMode' => null])
+    public function getOrders($userId, $options = ['filters' => [], 'sort' => null, 'sortMode' => null])
     {
-        $query = $this->model;
+        $data = User::find($userId)->orders;
 
-        if ($options['filters']) {
-            foreach ($options['filters'] as $filter) {
-                $query = $query->where(...$filter);
-            }
-        }
-
-        if ($options['sort']) {
-            $query = $query->orderBy($options['sort'], $options['sortMode']);
-        }
-
-        $data = $query->paginate($this->pageSize);
-
-        return Order::collection($data);
+        return OrderResource::collection($data);
     }
 
-    public function getAllByUser($userID)
+    public function getOrder($id)
     {
-        return User::find($userID)->orders;
+        $order = Order::find($id);
+        return new OrderResource($order);
     }
 
-    public function createOrder($order, $detail)
+    public function storeOrder($order, $detail)
     {
         return DB::transaction(function () use ($order, $detail) {
             $productRepository = new ProductRepository();
@@ -84,6 +72,35 @@ class OrderRepository
     public function createOrderFromCart($data)
     {
         // +$cartRepository=new CartRepository();
+    }
 
+    public function isProductInOrder($id, $productId)
+    {
+        $order = $this->getOrderModel($id);
+        $detail = $order->detail()->where(Product::COL_ID, $productId)->get();
+        if (count($detail) > 0) {
+            return true;
+        }
+        return false;
+    }
+
+    public function isBoughtProduct($userId, $productId)
+    {
+        $userRepository = new UserRepository();
+        $user = $userRepository($userId);
+        $data=$user->join('order', User::COL_ID, '=', Order::COL_USER)
+            ->join('order_detail', OrderDetail::COL_ORDER, '=', Order::COL_ID)
+            ->where(Product::COL_ID, $productId)
+            ->get();
+        return $data;
+    }
+
+    public function getOrderModel($id)
+    {
+        $order = Order::find($id);
+        if ($order) {
+            return $order;
+        }
+        throw new Error('Order khong ton tai', 404);
     }
 }

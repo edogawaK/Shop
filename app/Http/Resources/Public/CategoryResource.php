@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Category;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CategoryResource extends JsonResource
@@ -15,9 +16,9 @@ class CategoryResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id' => $this->category_id,
-            'name' => $this->category_name,
-            'childs' => $this->when($this->category_parent == null, $this->collection($this->childs)),
+            'id' => $this->{Category::COL_ID},
+            'name' => $this->{Category::COL_NAME},
+            'childs' => $this->when($this->{Category::COL_PARENT} == null, $this->collection($this->childs)),
         ];
     }
 }

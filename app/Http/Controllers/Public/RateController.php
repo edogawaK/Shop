@@ -3,7 +3,6 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Product;
 use App\Models\Rate;
 use App\Models\User;
 use App\Repositories\RateRepository;
@@ -11,6 +10,10 @@ use Illuminate\Http\Request;
 
 class RateController extends Controller
 {
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -18,7 +21,9 @@ class RateController extends Controller
      */
     public function index(Request $request, $productId)
     {
-        return $this->response(['data' => Product::find($productId)->rates]);
+        $rateRepository = new RateRepository();
+        $rates = $rateRepository->getRates($productId);
+        return $this->response(['data' => $rates]);
     }
 
     /**
@@ -30,13 +35,14 @@ class RateController extends Controller
     public function store(Request $request, $productId)
     {
         $rateRepository = new RateRepository();
-        $data = $rateRepository->createRate([
-            Rate::COL_USER => $request->user()->{User::COL_ID},
-            Rate::COL_CONTENT => $request['content'],
-            Rate::COL_POINT => $request['point'],
-            Rate::COL_PRODUCT => $request['productId'],
-        ]);
-        return $this->response(['data' => $data]);
+        $userId = $request->user()->{User::COL_ID};
+        $orderId = $request->orderId;
+        $data = [
+            Rate::COL_CONTENT => $request->content,
+            Rate::COL_POINT => $request->point,
+        ];
+        $result = $rateRepository->storeRate($userId, $orderId, $productId, $data);
+        return $this->response(['data' => $result]);
     }
 
     /**
@@ -57,9 +63,15 @@ class RateController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(Request $request, $productId, $id)
     {
-        //
+        $rateRepository = new RateRepository();
+        $data = array_filter([
+            Rate::COL_CONTENT => $request->content ?? null,
+            Rate::COL_POINT => $request->point ?? null,
+        ]);
+        $result = $rateRepository->updateRate($id, $data);
+        return $this->response(['data' => $result]);
     }
 
     /**
@@ -68,8 +80,10 @@ class RateController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy($productId, $id)
     {
-        //
+        $rateRepository = new RateRepository();
+        $result = $rateRepository->destroyRate($id);
+        return $this->response(['data' => $result]);
     }
 }

@@ -1,13 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Public\Auth;
+namespace App\Http\Requests\Public\Cart;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class SigninRequest extends FormRequest
+class StoreCartRequest extends FormRequest
 {
-    use AuthConvert;
+    use CartConvert;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -15,10 +15,7 @@ class SigninRequest extends FormRequest
      */
     public function authorize()
     {
-        if (Auth::check()) {
-            return false;
-        }
-        return true;
+        return Auth::check();
     }
 
     /**
@@ -29,8 +26,9 @@ class SigninRequest extends FormRequest
     public function rules()
     {
         return [
-            'email' => 'bail|required|regex:/(.+)@(.+)\.(.+)/i',
-            'password' => 'bail|required|min:6',
+            'productId' => 'bail|required',
+            'sizeId' => 'bail|required',
+            'quantity' => 'bail|required|numeric|min:1',
         ];
     }
 }

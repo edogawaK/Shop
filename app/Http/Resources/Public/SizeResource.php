@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Size;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class SizeResource extends JsonResource
@@ -15,9 +16,9 @@ class SizeResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'=>$this->size_id,
-            'name'=>$this->size_name,
-            'status'=>$this->size_status,
+            'id' => $this->{Size::COL_ID},
+            'name' => $this->{Size::COL_NAME},
+            'status' => $this->{Size::COL_STATUS},
         ];
     }
 }

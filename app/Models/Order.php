@@ -48,4 +48,9 @@ class Order extends Model
     {
         return $this->hasMany(OrderDetail::class, OrderDetail::COL_ORDER, self::COL_ID);
     }
+
+    public function rate()
+    {
+        return $this->hasMany(Rate::class, Rate::COL_ORDER, self::COL_ID);
+    }
 }

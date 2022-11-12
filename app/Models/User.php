@@ -56,6 +56,11 @@ class User extends Authenticatable
         return $this->belongsTo(Locate::class, self::COL_LOCATE, Locate::COL_ID);
     }
 
+    public function rates()
+    {
+        return $this->hasMany(Rate::class, Rate::COL_USER, self::COL_ID);
+    }
+
     public function getAuthPassword()
     {
         return $this->user_password;

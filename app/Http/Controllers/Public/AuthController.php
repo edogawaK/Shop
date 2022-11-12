@@ -19,13 +19,19 @@ class AuthController extends Controller
 
     public function signin(SigninRequest $request)
     {
-        if (Auth::attempt(['user_email' => $request->email, 'password' => $request->password])) {
-            $token = $request->user()->createToken($this->tokenName, $this->abilities)->plainTextToken;
+        $requestData = $request->convert();
+        var_dump($requestData);
+        if (Auth::attempt([
+            User::COL_EMAIL => $requestData[User::COL_EMAIL],
+            'password' => $requestData[User::COL_PASSWORD],
+        ])) {
+            return Auth::user()->tokens;
+            // $token = $request->user()->createToken($this->tokenName, $this->abilities)->plainTextToken;
 
-            return $this->response([
-                'message' => 'Signin success!',
-                'data' => ['token' => $token]
-            ]);
+            // return $this->response([
+            //     'message' => 'Signin success!',
+            //     'data' => ['token' => $token],
+            // ]);
         }
         throw new Error('Signin fail!');
     }

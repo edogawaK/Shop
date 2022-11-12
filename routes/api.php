@@ -34,7 +34,7 @@ Route::group([], function () {
 
     Route::apiResource('cart', CartController::class)->only(['index', 'update', 'store', 'destroy']);
 
-    Route::apiResource('orders', OrderController::class)->only(['index', 'update', 'store', 'destroy']);
+    Route::apiResource('orders', OrderController::class);
 
     Route::apiResource('profile', UserController::class)->only(['show', 'update']);
 

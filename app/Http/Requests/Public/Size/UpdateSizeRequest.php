@@ -1,12 +1,13 @@
 <?php
 
-namespace App\Http\Requests\Public;
+namespace App\Http\Requests\Public\Size;
 
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
 
-class CartRequest extends FormRequest
+class UpdateSizeRequest extends FormRequest
 {
+    use SizeConvert;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -25,8 +26,6 @@ class CartRequest extends FormRequest
     public function rules()
     {
         return [
-            'productId' => 'bail|required',
-            'sizeId' => 'bail|required',
         ];
     }
 }

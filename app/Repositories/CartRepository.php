@@ -6,31 +6,15 @@ use App\Http\Resources\Public\CartResource;
 use App\Models\Cart;
 use App\Models\User;
 use Exception;
-use Illuminate\Support\Facades\App;
 
 class CartRepository
 {
     protected $pageSize = 2;
 
-    public function all($userId)
+    public function getCart($userId)
     {
         $data = User::find($userId)->carts;
         return CartResource::collection($data);
-    }
-
-    private function create($data)
-    {
-        return Cart::create($data);
-    }
-
-    public function update($id, $data)
-    {
-        return Cart::find($id)->update($data);
-    }
-
-    public function delete($id)
-    {
-        return Cart::find($id)->delete();
     }
 
     public function addToCart($data)
@@ -38,7 +22,7 @@ class CartRepository
         $productRepository = new ProductRepository();
         $productAvailable = $productRepository->isAvailable($data[Cart::COL_PRODUCT], $data[Cart::COL_SIZE], $data[Cart::COL_QUANTITY]);
         if ($productAvailable) {
-            return new CartResource($this->create($data));
+            return new CartResource(Cart::create($data));
         }
         throw new Exception('Khong du so luong');
     }

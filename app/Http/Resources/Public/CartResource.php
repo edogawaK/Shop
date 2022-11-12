@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Cart;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class CartResource extends JsonResource
@@ -15,6 +16,7 @@ class CartResource extends JsonResource
     public function toArray($request)
     {
         return [
+            'cartId'=>$this->{Cart::COL_ID},
             'product'=>new ProductResource($this->product),
             'size'=>new SizeResource($this->size),
             'quantity'=>$this->cart_quantity,
