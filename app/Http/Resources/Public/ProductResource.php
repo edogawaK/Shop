@@ -22,7 +22,7 @@ class ProductResource extends JsonResource
             'name' => $this->{Product::COL_NAME},
             'price' => $this->{Product::COL_PRICE},
             'salePrice'=>$this->when($this->{Product::COL_SALE}, function(){
-                return $this->{Product::COL_PRICE}
+                return $this->{Product::COL_PRICE};
             }),
             'avt' => $this->{Product::COL_AVT},
             'status' => $this->{Product::COL_STATUS},
