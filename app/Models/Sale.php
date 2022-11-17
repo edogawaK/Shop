@@ -22,6 +22,7 @@ class Sale extends Model
     public $table = "sale";
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
+    public $appends = ['total'];
 
     public function products()
     {
@@ -31,5 +32,10 @@ class Sale extends Model
     public function admin()
     {
         return $this->belongsTo(Admin::class, self::COL_ADMIN, Admin::COL_ID);
+    }
+
+    public function getTotalAttribute()
+    {
+        return $this->products()->count();
     }
 }

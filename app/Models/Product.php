@@ -26,10 +26,18 @@ class Product extends Model
     public $table = "product";
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
-    public $guarded = [
+    public $fillable = [
+        self::COL_AVT,
+        self::COL_CATEGORY,
+        self::COL_DESC,
+        self::COL_NAME,
+        self::COL_RATE,
+        self::COL_SOLD,
+        self::COL_SALE,
         self::COL_COST,
         self::COL_PRICE,
         self::COL_SOLD,
+        self::COL_STATUS,
     ];
 
     public function images()
@@ -50,5 +58,10 @@ class Product extends Model
     public function rates()
     {
         return $this->hasMany(Rate::class, Rate::COL_PRODUCT, self::COL_ID);
+    }
+
+    public function sale()
+    {
+        return $this->belongsTo(Sale::class, self::COL_SALE, Sale::COL_ID);
     }
 }

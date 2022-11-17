@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
-use App\Models\Category;
+use App\Http\Resources\Public\CategoryResource;
 use App\Repositories\CategoryRepository;
 use Illuminate\Http\Request;
 
@@ -17,7 +17,8 @@ class CategoryController extends Controller
     public function index()
     {
         $categoryRepository = new CategoryRepository();
-        return $categoryRepository->getCategories();
+        $categories = $categoryRepository->getCategories();
+        return CategoryResource::collection($categories);
     }
 
     /**
@@ -28,11 +29,7 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        $categoryRepository = new CategoryRepository();
-        return $categoryRepository->storeCategory([
-            Category::COL_NAME=>$request->name,
-            Category::COL_PARENT=>$request->parent,
-        ]);
+        //
     }
 
     /**

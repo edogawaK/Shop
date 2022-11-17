@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\Size\StoreSizeRequest;
+use App\Http\Resources\Public\SizeResource;
 use App\Repositories\SizeRepository;
 use Illuminate\Http\Request;
 
@@ -17,8 +18,8 @@ class SizeController extends Controller
     public function index(Request $request, $productId)
     {
         $sizeRepository = new SizeRepository();
-        $result = $sizeRepository->getSizes();
-        return $this->response(['data' => $result]);
+        $sizes = $sizeRepository->getSizes();
+        return $this->response(['data' => SizeResource::collection($sizes)]);
     }
 
     /**
@@ -32,9 +33,9 @@ class SizeController extends Controller
         $sizeRepository = new SizeRepository();
         $requestData = $request->convert();
 
-        $result = $sizeRepository->storeSize($requestData);
+        $size = $sizeRepository->storeSize($requestData);
         return $this->response([
-            'data' => $result,
+            'data' => $size,
         ]);
     }
 

@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Public\Category;
+namespace App\Http\Requests\Private\Auth;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class UpdateCategoryRequest extends FormRequest
+class SigninRequest extends FormRequest
 {
+    use AuthConvert;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +14,7 @@ class UpdateCategoryRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        return true;
     }
 
     /**
@@ -25,6 +25,7 @@ class UpdateCategoryRequest extends FormRequest
     public function rules()
     {
         return [
+            //
         ];
     }
 }

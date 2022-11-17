@@ -16,10 +16,10 @@ class CartResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'cartId'=>$this->{Cart::COL_ID},
-            'product'=>new ProductResource($this->product),
-            'size'=>new SizeResource($this->size),
-            'quantity'=>$this->cart_quantity,
+            'cartId' => $this->{Cart::COL_ID},
+            'product' => new ProductResource($this->product),
+            'size' => new SizeResource($this->size),
+            'quantity' => $this->{Cart::COL_QUANTITY},
         ];
     }
 }

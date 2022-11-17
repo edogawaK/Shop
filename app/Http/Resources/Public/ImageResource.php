@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Image;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ImageResource extends JsonResource
@@ -15,8 +16,8 @@ class ImageResource extends JsonResource
     public function toArray($request)
     {
         return [
-            'id'=>$this->image_id,
-            'link'=>$this->image_link,
+            'id' => $this->{Image::COL_ID},
+            'link' => $this->{Image::COL_LINK},
         ];
     }
 }

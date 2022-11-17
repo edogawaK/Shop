@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Public\Category;
+namespace App\Http\Requests\Private\Category;
 
 use Illuminate\Foundation\Http\FormRequest;
-use Illuminate\Support\Facades\Auth;
 
-class StoreCategoryRequest extends FormRequest
+class UpdateCategoryRequest extends FormRequest
 {
+    use CategoryConvert;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +14,7 @@ class StoreCategoryRequest extends FormRequest
      */
     public function authorize()
     {
-        return Auth::check();
+        return false;
     }
 
     /**
@@ -25,7 +25,7 @@ class StoreCategoryRequest extends FormRequest
     public function rules()
     {
         return [
-            'name' => 'bail|required',
+            //
         ];
     }
 }

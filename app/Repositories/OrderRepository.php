@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\Public\OrderResource;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
@@ -14,15 +13,14 @@ class OrderRepository
 {
     public function getOrders($userId, $options = ['filters' => [], 'sort' => null, 'sortMode' => null])
     {
-        $data = User::find($userId)->orders;
-
-        return OrderResource::collection($data);
+        $orders = User::find($userId)->orders;
+        return $orders;
     }
 
     public function getOrder($id)
     {
-        $order = Order::find($id);
-        return new OrderResource($order);
+        $order = $this->getOrderModel($id);
+        return $order;
     }
 
     public function storeOrder($order, $detail)
@@ -41,7 +39,7 @@ class OrderRepository
                     throw new Error('Không thể đặt hàng do không đủ số lượng');
                 }
             }
-            return new OrderResource($order);
+            return $order;
         });
     }
 
@@ -66,7 +64,7 @@ class OrderRepository
         $order = Order::find($id);
         $order->{Order::COL_STATUS} = $status;
         $order->save();
-        return new OrderResource($order);
+        return $order;
     }
 
     public function createOrderFromCart($data)
@@ -88,7 +86,7 @@ class OrderRepository
     {
         $userRepository = new UserRepository();
         $user = $userRepository($userId);
-        $data=$user->join('order', User::COL_ID, '=', Order::COL_USER)
+        $data = $user->join('order', User::COL_ID, '=', Order::COL_USER)
             ->join('order_detail', OrderDetail::COL_ORDER, '=', Order::COL_ID)
             ->where(Product::COL_ID, $productId)
             ->get();

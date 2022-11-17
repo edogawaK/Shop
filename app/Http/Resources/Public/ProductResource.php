@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Product;
+use App\Models\Size;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -16,24 +18,27 @@ class ProductResource extends JsonResource
     {
         return [
             //basic
-            'id' => $this->product_id,
-            'name' => $this->product_name,
-            'price' => $this->product_price,
-            'avt' => $this->product_avt,
-            'status' => $this->product_status,
+            'id' => $this->{Product::COL_ID},
+            'name' => $this->{Product::COL_NAME},
+            'price' => $this->{Product::COL_PRICE},
+            'salePrice'=>$this->when($this->{Product::COL_SALE}, function(){
+                return $this->{Product::COL_PRICE}
+            }),
+            'avt' => $this->{Product::COL_AVT},
+            'status' => $this->{Product::COL_STATUS},
 
             //detail
-            $this->mergeWhen($this->isDetailRequest($request), [
-                'desc' => $this->product_desc,
+            $this->mergeWhen($this->detail, [
+                'desc' => $this->{Product::COL_DESC},
                 'images' => ImageResource::collection($this->images),
                 'sizes' => $this->getProductAmount($this->sizes),
             ]),
         ];
     }
 
-    private function isDetailRequest($request)
+    private function shouldDetail($request)
     {
-        return $request->route()->getName() === 'products.show';
+        // return $request->route()->getName() === 'products.show'||$request->user()->;
     }
 
     private function getProductAmount($data)
@@ -42,15 +47,15 @@ class ProductResource extends JsonResource
         if (is_countable($data)) {
             foreach ($data as $item) {
                 $response[] = [
-                    'id' => $item->size_id,
-                    'name' => $item->size_name,
+                    'id' => $item->{Size::COL_ID},
+                    'name' => $item->{Size::COL_NAME},
                     'quantity' => $item->pivot->quantity,
                 ];
             }
         } else {
             $response[] = [
-                'id' => $data->size_id,
-                'name' => $data->size_name,
+                'id' => $data->{Size::COL_ID},
+                'name' => $data->{Size::COL_NAME},
                 'quantity' => $data->pivot->quantity,
             ];
         }

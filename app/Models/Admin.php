@@ -2,13 +2,16 @@
 
 namespace App\Models;
 
+// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+use Illuminate\Notifications\Notifiable;
+use Laravel\Sanctum\HasApiTokens;
 
-class Admin extends Model
+class Admin extends Authenticatable
 {
-    use HasFactory, SoftDeletes;
+    use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
 
     const COL_ID = 'admin_id';
     const COL_NAME = 'admin_name';
@@ -22,4 +25,8 @@ class Admin extends Model
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
 
+    public function getAuthPassword()
+    {
+        return $this->{self::COL_PASSWORD};
+    }
 }

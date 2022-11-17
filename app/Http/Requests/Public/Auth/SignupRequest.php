@@ -41,19 +41,4 @@ class SignupRequest extends FormRequest
             'street' => 'bail|required|string',
         ];
     }
-
-    // public function convert()
-    // {
-    //     return [
-    //         'user_email' => $this->email,
-    //         'user_name' => $this->name,
-    //         'user_password' => bcrypt($this->password),
-    //         'locate_city' => $this->city,
-    //         'locate_district' => $this->district,
-    //         'locate_ward' => $this->ward,
-    //         'locate_phone' => $this->phone,
-    //         'locate_street' => $this->street,
-    //         'locate_receiver'=>$this->name,
-    //     ];
-    // }
 }

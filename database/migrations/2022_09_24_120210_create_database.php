@@ -60,7 +60,7 @@ return new class extends Migration
             $table->increments('sale_id');
             $table->integer('sale_discount');
             $table->string('sale_name');
-            $table->integer('sale_unit');
+            $table->enum('sale_unit', ['percentage', 'vnd', 'base']);
             $table->integer('sale_status')->default(1);
             $table->dateTime('sale_date')->useCurrent();
             $table->dateTime('sale_end');
@@ -79,12 +79,12 @@ return new class extends Migration
         Schema::create('product', function (Blueprint $table) {
             $table->increments('product_id');
             $table->string('product_name');
-            $table->string('product_avt');
+            $table->string('product_avt')->nullable();
             $table->double('product_price');
             $table->double('product_cost');
             $table->dateTime('product_date')->useCurrent();
             $table->integer('product_sold')->default(0);
-            $table->text('product_desc');
+            $table->text('product_desc')->nullable();
             $table->integer('product_status')->default(1);
             $table->double('product_rate')->default(0);
             $table->unsignedInteger('sale_id')->nullable();

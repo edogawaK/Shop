@@ -2,25 +2,28 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\Public\CategoryResource;
 use App\Models\Category;
 
 class CategoryRepository
 {
     public function getCategories()
     {
-        return CategoryResource::collection(Category::where(Category::COL_PARENT, null)->with('childs')->get());
+        $categories = Category::where(Category::COL_PARENT, null)->with('childs')->get();
+        return $categories;
     }
     public function storeCategory($data)
     {
-        return Category::create($data);
+        $category = Category::create($data);
+        return $category;
     }
     public function updateCategory($id, $data)
     {
-        return Category::find($id)->update($data);
+        $category = Category::find($id)->update($data);
+        return $category;
     }
     public function destroyCategory($id)
     {
-        return Category::find($id)->delete();
+        $category = Category::find($id)->delete();
+        return $category;
     }
 }

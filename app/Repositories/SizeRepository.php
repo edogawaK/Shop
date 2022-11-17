@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\Public\SizeResource;
 use App\Models\Size;
 use Error;
 
@@ -11,29 +10,31 @@ class SizeRepository
     public $pageSize = 10;
     public function getSizes()
     {
-        $sizes = Size::paginate($this->pageSize);
-        return SizeResource::collection($sizes);
+        return Size::paginate($this->pageSize);
     }
+
     public function getSize($id)
     {
-        $size = Size::find($id);
-        return new SizeResource($size);
+        return $this->getSizeModel($id);
     }
+
     public function storeSize($data)
     {
-        $size = Size::create($data);
-        return new SizeResource($size);
+        return Size::create($data);
     }
+
     public function updateSize($id, $data)
     {
-        $size = Size::find($id)->update($data);
-        return new SizeResource($size);
+        $size=$this->getSizeModel($id);
+        return $size->update($data);
     }
+
     public function destroySize($id)
     {
-        $result = Size::find($id)->delete();
-        return true;
+        $size=$this->getSizeModel($id);
+        return $size->delete();
     }
+
     public function getSizeModel($id)
     {
         $size = Size::find($id);

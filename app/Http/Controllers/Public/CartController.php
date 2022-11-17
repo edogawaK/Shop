@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Public\Cart\StoreCartRequest;
 use App\Http\Requests\Public\Cart\UpdateCartRequest;
+use App\Http\Resources\Public\CartResource;
 use App\Models\User;
 use App\Repositories\CartRepository;
 use Illuminate\Http\Request;
@@ -13,7 +14,7 @@ class CartController extends Controller
 {
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+        $this->middleware(['auth:sanctum', 'abilities:user']);
     }
     /**
      * Display a listing of the resource.
@@ -23,7 +24,8 @@ class CartController extends Controller
     public function index(Request $request)
     {
         $cartRepository = new CartRepository();
-        return $this->response(['data' => $cartRepository->getCart($request->user()->user_id)]);
+        $cart = $cartRepository->getCart($request->user()->user_id);
+        return $this->response(['data' => CartResource::collection($cart)]);
     }
 
     /**
@@ -36,11 +38,11 @@ class CartController extends Controller
     {
         $cartRepository = new CartRepository();
         $requestData = $request->convert();
-        $requestData[User::COL_ID]=$request->user()->{User::COL_ID};
-        $result = $cartRepository->addToCart($requestData);
+        $requestData[User::COL_ID] = $request->user()->{User::COL_ID};
+        $cartItem = $cartRepository->addToCart($requestData);
 
         return $this->response([
-            'data' => $result,
+            'data' =>new CartResource($cartItem),
         ]);
     }
 
@@ -67,10 +69,10 @@ class CartController extends Controller
         $cartRepository = new CartRepository();
         $requestData = $request->convert();
 
-        $result = $cartRepository->updateCart($requestData);
+        $result = $cartRepository->updateCart($id, $requestData);
 
         return $this->response([
-            'data' => $result,
+            'data' => new CartResource($result),
         ]);
     }
 

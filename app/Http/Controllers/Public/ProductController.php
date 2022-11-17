@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Public\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
 use App\Repositories\ProductRepository;
@@ -26,10 +27,13 @@ class ProductController extends Controller
         $productRepository = new ProductRepository();
         $filterRules = $this->convertFilter($request);
         $sortRules = $this->convertSort($request);
-        return $productRepository->getProducts([
-            // 'filters' => $filterRules,
+        $products = $productRepository->getProducts([
+            'filters' => $filterRules,
             'sort' => $sortRules['rules'],
             'sortMode' => $sortRules['mode'],
+        ]);
+        return $this->response([
+            'data' => ProductResource::collection($products),
         ]);
     }
 
@@ -93,8 +97,10 @@ class ProductController extends Controller
     public function show($id)
     {
         $productRepository = new ProductRepository();
+        $product = $productRepository->getProductDetail($id);
+        $product->detail = true;
         return $this->response(
-            ['data' => $productRepository->getProductDetail($id)]
+            ['data' => new ProductResource($product)]
         );
     }
 

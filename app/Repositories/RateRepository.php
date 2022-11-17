@@ -9,21 +9,25 @@ use Error;
 
 class RateRepository
 {
+    public $pageSize = 10;
+
     public function getRates($productId)
     {
-        return Product::find($productId)->rates;
+        $rates = Product::find($productId)->rates()->paginate($this->pageSize);
+        return $rates;
     }
 
     public function updateRate($id, $data)
     {
-        echo 'rate:' . $id;
-        return Rate::find($id)->update($data);
+        $rate = Rate::find($id)->update($data);
+        return $rate;
     }
 
     public function storeRate($userId, $productId, $data)
     {
         if ($this->canRate($userId, $productId)) {
-            return Rate::create($data);
+            $rate = Rate::create($data);
+            return $rate;
         }
         throw new Error('Không thể thêm đánh giá!', 400);
     }

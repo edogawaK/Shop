@@ -5,16 +5,19 @@ namespace App\Repositories;
 use App\Http\Resources\Public\CartResource;
 use App\Models\Cart;
 use App\Models\User;
+use Error;
 use Exception;
 
 class CartRepository
 {
-    protected $pageSize = 2;
+    protected $pageSize = 10;
 
     public function getCart($userId)
     {
-        $data = User::find($userId)->carts;
-        return CartResource::collection($data);
+        $userRepository=new UserRepository();
+        $user=$userRepository->getUserModel($userId);
+        $data = $user->carts;
+        return $data;
     }
 
     public function addToCart($data)
@@ -22,7 +25,7 @@ class CartRepository
         $productRepository = new ProductRepository();
         $productAvailable = $productRepository->isAvailable($data[Cart::COL_PRODUCT], $data[Cart::COL_SIZE], $data[Cart::COL_QUANTITY]);
         if ($productAvailable) {
-            return new CartResource(Cart::create($data));
+            return Cart::create($data);
         }
         throw new Exception('Khong du so luong');
     }
@@ -33,18 +36,26 @@ class CartRepository
         return true;
     }
 
-    public function updateCart($data)
+    public function updateCart($id, $data)
     {
         $productRepository = new ProductRepository();
-        $cartItem = Cart::find($data[Cart::COL_ID]);
+        $cartItem = $this->getCartModel($id);
         $productAvailable = $productRepository->isAvailable($cartItem->{Cart::COL_PRODUCT}, $cartItem->{Cart::COL_SIZE}, $data[Cart::COL_QUANTITY]);
         if ($productAvailable) {
             $cartItem->{Cart::COL_QUANTITY} = $data[Cart::COL_QUANTITY];
             $cartItem->save();
-            return new CartResource($cartItem);
+            return $cartItem;
         } else {
             throw new Exception("Khong du hang de update");
         }
         throw new Exception("KHONG TIM THAY THONG TIN SP TRONG CART");
+    }
+
+    public function getCartModel($id){
+        $cart=Cart::find($id);
+        if($cart){
+            return $cart;
+        }
+        throw new Error('Không tìm thấy cart có id: '.$id);
     }
 }

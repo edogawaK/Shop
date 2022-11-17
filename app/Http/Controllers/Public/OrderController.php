@@ -3,12 +3,12 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Public\Order\StoreOrderRequest;
+use App\Http\Resources\Public\OrderResource;
 use App\Models\Order;
-use App\Models\OrderDetail;
 use App\Models\User;
 use App\Repositories\OrderRepository;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -24,7 +24,8 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $orderRepository = new OrderRepository();
-        return $this->response(['data' => $orderRepository->getOrders($request->user()->{User::COL_ID})]);
+        $orders = $orderRepository->getOrders($request->user()->{User::COL_ID});
+        return $this->response(['data' => OrderResource::collection($orders)]);
     }
 
     /**
@@ -33,29 +34,23 @@ class OrderController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(StoreOrderRequest $request)
     {
         $orderRepository = new OrderRepository();
-        $userID = $request->user()->{User::COL_ID};
+        $requestData = $request->convert();
+        $userId = $request->user()->{User::COL_ID};
+
         $orderData = [
-            Order::COL_USER => $request->user()->{User::COL_ID},
-            Order::COL_LOCATE => $request['locateId'],
+            Order::COL_USER => $userId,
+            Order::COL_LOCATE => $requestData[Order::COL_LOCATE],
         ];
 
-        $detailData = [];
+        $detailData = $requestData['detail'];
 
-        foreach ($request['detail'] as $detailItem) {
-            $detailData[] = [
-                OrderDetail::COL_QUANTITY => $detailItem['quantity'],
-                OrderDetail::COL_PRODUCT => $detailItem['productId'],
-                OrderDetail::COL_SIZE => $detailItem['sizeId'],
-            ];
-        }
-
-        $data = $orderRepository->storeOrder($orderData, $detailData);
+        $order = $orderRepository->storeOrder($orderData, $detailData);
 
         return $this->response([
-            'data' => $data,
+            'data' => new OrderResource($order),
         ]);
     }
 
@@ -68,10 +63,10 @@ class OrderController extends Controller
     public function show($id)
     {
         $orderRepository = new OrderRepository();
-        
-        $data=$orderRepository->getOrder($id);
+
+        $order = $orderRepository->getOrder($id);
         return $this->response([
-            'data'=>$data,
+            'data' => new OrderResource($order),
         ]);
     }
 

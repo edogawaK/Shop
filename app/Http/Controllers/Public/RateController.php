@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Public\RateResource;
 use App\Models\Rate;
 use App\Models\User;
 use App\Repositories\RateRepository;
@@ -23,7 +24,7 @@ class RateController extends Controller
     {
         $rateRepository = new RateRepository();
         $rates = $rateRepository->getRates($productId);
-        return $this->response(['data' => $rates]);
+        return $this->response(['data' => RateResource::collection($rates)]);
     }
 
     /**
@@ -41,8 +42,8 @@ class RateController extends Controller
             Rate::COL_CONTENT => $request->content,
             Rate::COL_POINT => $request->point,
         ];
-        $result = $rateRepository->storeRate($userId, $orderId, $productId, $data);
-        return $this->response(['data' => $result]);
+        $rate = $rateRepository->storeRate($userId, $orderId, $productId, $data);
+        return $this->response(['data' => new RateResource($rate)]);
     }
 
     /**

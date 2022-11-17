@@ -2,11 +2,12 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\Public\ProductResource;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
 use Error;
 use Exception;
+use Illuminate\Support\Facades\DB;
 
 class ProductRepository
 {
@@ -23,7 +24,7 @@ class ProductRepository
         $product = Product::find($id);
         $product->sizes;
         $product->images;
-        return new ProductResource($product);
+        return $product;
     }
 
     public function getProducts($option)
@@ -32,10 +33,39 @@ class ProductRepository
         $query = $query->where(Product::COL_STATUS, 1);
 
         $query = $this->attachFilter($query, $option['filters'] ?? null);
-        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? null);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode']);
 
-        $data = $query->paginate($this->pageSize);
-        return ProductResource::collection($data);
+        $products = $query->paginate($this->pageSize);
+        return $products;
+    }
+
+    public function storeProduct($data)
+    {
+        return DB::transaction(function () use ($data) {
+            $product = Product::create($data);
+
+            foreach ($data['sizes'] as $size) {
+                $product->sizes()->attach($size[Size::COL_ID], ['quantity' => $size['quantity']]);
+            }
+
+            return $product;
+        });
+        throw new Error('Không thể ');
+    }
+
+    public function updateProduct($id, $data)
+    {
+        $product = Product::find($id);
+
+        $product->update($data);
+
+        if ($data['quantity'] && $data['size']) {
+            if (!$this->updateQuantity($data[Product::COL_ID], $data['size'], $data['quantity'])) {
+                throw new Exception("khong the cap nhat sl");
+            }
+        }
+
+        return true;
     }
 
     public function isRunOut(Product $product)
@@ -69,21 +99,6 @@ class ProductRepository
             return $sizeInfo->pivot->quantity;
         }
         throw new Exception('Product have not this Size');
-    }
-
-    public function updateProduct($id, $data)
-    {
-        $product = Product::find($id);
-
-        $product->update($data);
-
-        if ($data['quantity'] && $data['size']) {
-            if (!$this->updateQuantity($data[Product::COL_ID], $data['size'], $data['quantity'])) {
-                throw new Exception("khong the cap nhat sl");
-            }
-        }
-
-        return true;
     }
 
     public function updateQuantity(int $id, int $sizeId, int $quantity, string $mode = self::UPDATE_QUANTITY)
@@ -120,5 +135,33 @@ class ProductRepository
             throw new Exception("KHONG TIM THAY THONG TIN SIZE");
         }
         return $sizeInfo;
+    }
+
+    public function uploadAvatar($productId, $image)
+    {
+        $product = $this->getProductModel($productId);
+        $avtUrl = $image->store('images', 'public');
+        $product->{Product::COL_AVT} = $avtUrl;
+        $product->save();
+        return $product;
+    }
+
+    public function updaloadImages($productId, $images)
+    {
+        $product = $this->getProductModel($productId);
+        foreach ($images as $image) {
+            $imageUrl = $image->store('images', 'public');
+            $product->images()->create([
+                Image::COL_LINK => $imageUrl,
+            ]);
+        }
+        return $product;
+    }
+
+    public function uploadImage($image)
+    {
+        $imageUrl = $image->store('images', 'public');
+        $imageModel = Image::create($imageUrl);
+        return $imageModel->{Image::COL_ID};
     }
 }
