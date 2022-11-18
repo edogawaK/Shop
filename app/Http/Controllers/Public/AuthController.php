@@ -13,7 +13,7 @@ class AuthController extends Controller
     public function signin(SigninRequest $request)
     {
         $userRepository = new UserRepository();
-        return $userRepository->signin($request->email, $request->password);
+        return $this->response(['data' => $userRepository->signin($request->email, $request->password)]);
     }
 
     public function signup(SignupRequest $request)
