@@ -9,6 +9,7 @@ use App\Models\Order;
 use App\Models\User;
 use App\Repositories\OrderRepository;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderController extends Controller
 {
@@ -50,7 +51,7 @@ class OrderController extends Controller
         $order = $orderRepository->storeOrder($orderData, $detailData);
 
         return $this->response([
-            'data' => new OrderResource($order),
+            'data' => new OrderResource($order->fresh()),
         ]);
     }
 
@@ -64,7 +65,8 @@ class OrderController extends Controller
     {
         $orderRepository = new OrderRepository();
 
-        $order = $orderRepository->getOrder($id);
+        $userId = Auth::user()->{User::COL_ID};
+        $order = $orderRepository->getOrder($id, $userId);
         return $this->response([
             'data' => new OrderResource($order),
         ]);

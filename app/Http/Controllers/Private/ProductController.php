@@ -34,10 +34,8 @@ class ProductController extends Controller
     {
         $productRepository = new ProductRepository();
         $requestData = $request->convert();
-        // var_dump($requestData);
-        return $requestData;
-        // $product = $productRepository->storeProduct($requestData);
-        // return new ProductResource($product);
+        $product = $productRepository->storeProduct($requestData);
+        return new ProductResource($product);
     }
 
     /**
@@ -60,7 +58,25 @@ class ProductController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $productRepository = new ProductRepository();
+        $requestData = $request->convert();
+        $product = $productRepository->updateProduct($id, $requestData);
+        return $this->response(['data' => $product]);
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function updateImages(Request $request, $id)
+    {
+        $productRepository = new ProductRepository();
+        $requestData = $request->convert();
+        $product = $productRepository->updateImages($id, $requestData);
+        return $this->response(['data' => $product]);
     }
 
     /**

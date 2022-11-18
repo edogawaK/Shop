@@ -17,10 +17,13 @@ class OrderRepository
         return $orders;
     }
 
-    public function getOrder($id)
+    public function getOrder($id, $userId)
     {
         $order = $this->getOrderModel($id);
-        return $order;
+        if($order->{Order::COL_USER} == $userId){
+            return $order;
+        }
+        throw new Error('Khong tim thay order ID: '.$id);
     }
 
     public function storeOrder($order, $detail)

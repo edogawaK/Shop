@@ -87,6 +87,7 @@ return new class extends Migration
             $table->text('product_desc')->nullable();
             $table->integer('product_status')->default(1);
             $table->double('product_rate')->default(0);
+            $table->integer('product_rate_count')->default(0);
             $table->unsignedInteger('sale_id')->nullable();
             $table->unsignedInteger('category_id');
 
@@ -152,10 +153,8 @@ return new class extends Migration
             $table->dateTime('rate_date')->useCurrent();
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('order_id');
 
             $table->foreign('product_id')->references('product_id')->on('product');
-            $table->foreign('order_id')->references('order_id')->on('order');
             $table->foreign('user_id')->references('user_id')->on('user');
 
         });

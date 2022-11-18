@@ -20,6 +20,7 @@ class Product extends Model
     const COL_DESC = 'product_desc';
     const COL_STATUS = 'product_status';
     const COL_RATE = 'product_rate';
+    const COL_RATE_COUNT = 'product_rate_count';
     const COL_SALE = 'sale_id';
     const COL_CATEGORY = 'category_id';
 
@@ -32,6 +33,7 @@ class Product extends Model
         self::COL_DESC,
         self::COL_NAME,
         self::COL_RATE,
+        self::COL_RATE_COUNT,
         self::COL_SOLD,
         self::COL_SALE,
         self::COL_COST,

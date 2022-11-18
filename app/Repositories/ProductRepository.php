@@ -13,6 +13,12 @@ class ProductRepository
 {
     use Effects;
 
+    public function __construct()
+    {
+        $this->filtables = [Product::COL_CATEGORY, Product::COL_PRICE];
+        $this->sortables = [Product::COL_PRICE, Product::COL_DATE, Product::COL_COST, Product::COL_RATE, Product::COL_SOLD];
+    }
+
     const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
     const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
     const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
@@ -55,17 +61,32 @@ class ProductRepository
 
     public function updateProduct($id, $data)
     {
-        $product = Product::find($id);
+        return DB::transaction(function () use ($data, $id) {
+            $product = Product::find($id);
 
-        $product->update($data);
+            $product->update($data);
 
-        if ($data['quantity'] && $data['size']) {
-            if (!$this->updateQuantity($data[Product::COL_ID], $data['size'], $data['quantity'])) {
-                throw new Exception("khong the cap nhat sl");
+            if ($data['quantity'] && $data['size']) {
+                if (!$this->updateQuantity($data[Product::COL_ID], $data['size'], $data['quantity'])) {
+                    throw new Exception("khong the cap nhat sl");
+                }
             }
-        }
 
-        return true;
+            return true;
+        });
+    }
+
+    public function updateImages($id, $data)
+    {
+        return DB::transaction(function () use ($data, $id) {
+            $product = $this->getProductModel($id);
+
+            $avatarUrl = $this->uploadImage($product->{Product::COL_ID}, $data['avatar']);
+            $product->update([Product::COL_AVT => $avatarUrl]);
+            foreach ($data['images'] as $image) {
+                $this->uploadImage($product->{Product::COL_ID}, $image);
+            }
+        });
     }
 
     public function isRunOut(Product $product)
@@ -137,31 +158,19 @@ class ProductRepository
         return $sizeInfo;
     }
 
-    public function uploadAvatar($productId, $image)
-    {
-        $product = $this->getProductModel($productId);
-        $avtUrl = $image->store('images', 'public');
-        $product->{Product::COL_AVT} = $avtUrl;
-        $product->save();
-        return $product;
-    }
-
-    public function updaloadImages($productId, $images)
-    {
-        $product = $this->getProductModel($productId);
-        foreach ($images as $image) {
-            $imageUrl = $image->store('images', 'public');
-            $product->images()->create([
-                Image::COL_LINK => $imageUrl,
-            ]);
-        }
-        return $product;
-    }
-
-    public function uploadImage($image)
+    public function uploadImage($productId, $image)
     {
         $imageUrl = $image->store('images', 'public');
-        $imageModel = Image::create($imageUrl);
+        $imageModel = Image::create([
+            Image::COL_LINK => $image,
+            Image::COL_PRODUCT => $productId,
+        ]);
         return $imageModel->{Image::COL_ID};
     }
+
+    // public function getRatePoint($id){
+    //     $product=$this->getProductModel($id);
+    //     $rates=$product->rates()->count();
+    //     return
+    // }
 }

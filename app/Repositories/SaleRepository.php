@@ -10,6 +10,9 @@ use Error;
 class SaleRepository
 {
     public $pageSize = 10;
+    const PERCENTAGE_UNIT = 'percentage';
+    const MONEY_UNIT = 'vnd';
+    const BASE_UNIT = 'base';
 
     public function getSales()
     {
@@ -80,15 +83,32 @@ class SaleRepository
         throw new Error("Không tìm thấy sale với id: " . $id);
     }
 
-    public function getSalePrice($productId){
-        $productRepository=new ProductRepository();
-        $product=$productRepository->getProductModel($productId);
-        $sale=$product->sale;
-        $salePrice=null;
-        if($sale){
-            $saleUnit=$sale->{Sale::COL_UNIT};
-            $saleDiscount=$sale->{Sale::COL_DISCOUNT};
-            
+    public function getSalePrice($productId)
+    {
+        $productRepository = new ProductRepository();
+        $product = $productRepository->getProductModel($productId);
+
+        $sale = $product->sale;
+        $price = $product->{Product::COL_PRICE};
+        $salePrice = null;
+
+        if ($sale) {
+            $saleUnit = $sale->{Sale::COL_UNIT};
+            $saleDiscount = $sale->{Sale::COL_DISCOUNT};
+            switch ($saleUnit) {
+                case self::BASE_UNIT:
+                    $salePrice = $saleDiscount;
+                    return $salePrice;
+                case self::MONEY_UNIT:
+                    $salePrice = $price - $saleDiscount;
+                    return $salePrice;
+                case self::PERCENTAGE_UNIT:
+                    $salePrice = (1 - $saleDiscount / 100) * $price;
+                    return $salePrice;
+                default:
+                    break;
+            }
         }
+        return $price;
     }
 }

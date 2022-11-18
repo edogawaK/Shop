@@ -4,6 +4,7 @@ namespace App\Http\Resources\Public;
 
 use App\Models\Product;
 use App\Models\Size;
+use App\Repositories\SaleRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class ProductResource extends JsonResource
@@ -21,8 +22,9 @@ class ProductResource extends JsonResource
             'id' => $this->{Product::COL_ID},
             'name' => $this->{Product::COL_NAME},
             'price' => $this->{Product::COL_PRICE},
-            'salePrice'=>$this->when($this->{Product::COL_SALE}, function(){
-                return $this->{Product::COL_PRICE};
+            'salePrice' => $this->when($this->{Product::COL_SALE}, function () {
+                $saleRepository = new SaleRepository();
+                return $saleRepository->getSalePrice($this->{Product::COL_ID});
             }),
             'avt' => $this->{Product::COL_AVT},
             'status' => $this->{Product::COL_STATUS},

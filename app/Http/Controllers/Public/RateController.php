@@ -3,9 +3,9 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Public\Rate\StoreRateRequest;
 use App\Http\Resources\Public\RateResource;
 use App\Models\Rate;
-use App\Models\User;
 use App\Repositories\RateRepository;
 use Illuminate\Http\Request;
 
@@ -33,16 +33,11 @@ class RateController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request, $productId)
+    public function store(StoreRateRequest $request, $id)
     {
         $rateRepository = new RateRepository();
-        $userId = $request->user()->{User::COL_ID};
-        $orderId = $request->orderId;
-        $data = [
-            Rate::COL_CONTENT => $request->content,
-            Rate::COL_POINT => $request->point,
-        ];
-        $rate = $rateRepository->storeRate($userId, $orderId, $productId, $data);
+        $requestData = $request->convert();
+        $rate = $rateRepository->storeRate($requestData);
         return $this->response(['data' => new RateResource($rate)]);
     }
 

@@ -1,16 +1,11 @@
 <?php
 
 use App\Http\Controllers\Private\AuthController as AdminAuth;
-use App\Http\Controllers\Public\AuthController;
-use App\Http\Controllers\Public\CartController;
 use App\Http\Controllers\Private\CategoryController;
-use App\Http\Controllers\Private\SizeController;
-use App\Http\Controllers\Public\OrderController;
+use App\Http\Controllers\Private\ImageController;
 use App\Http\Controllers\Private\ProductController;
-use App\Http\Controllers\Public\RateController;
-use App\Http\Controllers\Public\UserController;
+use App\Http\Controllers\Private\SizeController;
 use App\Models\Product;
-use App\Models\Size;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -24,14 +19,14 @@ use Illuminate\Support\Facades\Route;
 |
  */
 
-
-
 //---------------------------------------------private route
 Route::group(['prefix' => 'admin'], function () {
 
     Route::apiResource('products', ProductController::class);
-    Route::post('/products/{productId}/avatar',[Product::class,'storeAvatar']);
-
+    Route::apiResource('products.images', ImageController::class)->parameters([
+        'products'=>'productId',
+        'images'=>'id',
+    ]);
     // Route::apiResource('products.rates', RateController::class)->only(['index', 'store', 'update', 'destroy'])->parameters([
     //     'products' => 'productId',
     //     'rates' => 'id',
@@ -46,11 +41,11 @@ Route::group(['prefix' => 'admin'], function () {
 
     // Route::apiResource('profile', UserController::class)->only(['show', 'update']);
 
-    // Route::group(['prefix' => 'auth'], function () {
-    //     Route::post('signin', [AdminAuth::class, 'signin']);
-    //     Route::post('signup', [AdminAuth::class, 'signup']);
-    //     // Route::post('forgot', [AuthController::class, 'forgot']);
-    //     // Route::put('reset', [AuthController::class, 'reset']);
-    // });
+    Route::group(['prefix' => 'auth'], function () {
+        Route::post('signin', [AdminAuth::class, 'signin']);
+        Route::post('signup', [AdminAuth::class, 'signup']);
+        // Route::post('forgot', [AuthController::class, 'forgot']);
+        // Route::put('reset', [AuthController::class, 'reset']);
+    });
 
 });

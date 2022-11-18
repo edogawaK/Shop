@@ -6,11 +6,17 @@ use App\Models\Rate;
 
 trait Effects
 {
+    protected $filtables = [];
+    public $sortables = [];
+    public $searchables = [];
+
     public function attachFilter($query, $filters)
     {
         if ($filters) {
-            foreach ($filters as $filter) {
-                $query = $query->where(...$filter);
+            foreach ($this->filtables as $filter) {
+                if ($filters[$filter] ?? null) {
+                    $query = $query->where(...$filters[$filter]);
+                }
             }
         }
         return $query;
@@ -21,5 +27,9 @@ trait Effects
             $query = $query->orderBy($sort, $sortMode);
         }
         return $query;
+    }
+    public function filterRules($rules)
+    {
+
     }
 }

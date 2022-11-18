@@ -23,8 +23,11 @@ class RateRepository
         return $rate;
     }
 
-    public function storeRate($userId, $productId, $data)
+    public function storeRate($data)
     {
+        $userId = $data[Rate::COL_USER];
+        $productId = $data[Rate::COL_PRODUCT];
+
         if ($this->canRate($userId, $productId)) {
             $rate = Rate::create($data);
             return $rate;
@@ -47,8 +50,8 @@ class RateRepository
     {
         $userRepository = new UserRepository();
         $user = $userRepository->getUserModel($userId);
-        return $user->orders()->whereHas('detail', function ($query) use ($productId) {
+        return ($user->orders()->whereHas('detail', function ($query) use ($productId) {
             $query->where(OrderDetail::COL_PRODUCT, $productId);
-        })->exists() && !$this->isRated($userId, $productId);
+        })->exists() && !$this->isRated($userId, $productId));
     }
 }

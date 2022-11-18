@@ -9,7 +9,7 @@ use App\Repositories\AdminRepository;
 class AuthController extends Controller
 {
     public function signin(SigninRequest $request)
-    {
+    {echo 'ok';
         $adminRepository = new AdminRepository();
         $admin = $adminRepository->signin($request->email, $request->password);
         return $this->response([
