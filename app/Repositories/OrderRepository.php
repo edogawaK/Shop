@@ -12,14 +12,22 @@ use Illuminate\Support\Facades\DB;
 
 class OrderRepository
 {
+    use Effects;
+
     const CANCEL_STATUS = 0;
     const PREPARE_STATUS = 1;
     const DELIVERY_STATUS = 2;
     const RECEIVE_STATUS = 3;
 
-    public function getOrders($userId, $options = ['filters' => [], 'sort' => null, 'sortMode' => null])
+    public $pageSize = 10;
+
+    public function getOrders($userId, $option)
     {
-        $orders = User::find($userId)->orders;
+        $query = User::find($userId)->orders();
+        $query = $this->attachFilter($query, $option['filters'] ?? null);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? 'asc');
+
+        $orders = $query->paginate($this->pageSize);
         return $orders;
     }
 
@@ -54,6 +62,9 @@ class OrderRepository
                     ]);
 
                     $productRepository->updateQuantity($cart->{Cart::COL_PRODUCT}, $cart->{Cart::COL_SIZE}, $cart->{Cart::COL_QUANTITY}, ProductRepository::DECREASE_QUANTITY);
+                    $product = Product::find($cart->{Cart::COL_PRODUCT});
+                    $product->{Product::COL_SOLD} += $cart->{Cart::COL_QUANTITY};
+                    $product->save();
                     $total += Product::find($cart->{Cart::COL_PRODUCT})->{Product::COL_PRICE};
 
                     $cart->delete();
@@ -80,9 +91,30 @@ class OrderRepository
             $detail = $order->detail;
             foreach ($detail as $detailItem) {
                 $productRepository->updateQuantity($detailItem[OrderDetail::COL_PRODUCT], $detailItem[OrderDetail::COL_SIZE], $detailItem[OrderDetail::COL_QUANTITY], ProductRepository::INCREASE_QUANTITY);
+                $product = Product::find($detailItem[OrderDetail::COL_PRODUCT]);
+                $product->{Product::COL_SOLD} -= $detailItem[OrderDetail::COL_QUANTITY];
+                $product->save();
             }
             return true;
         });
+    }
+
+    public function orderReceived($id)
+    {
+        $this->updateOrderStatus($id, self::RECEIVE_STATUS);
+        return true;
+    }
+
+    public function orderPrepare($id)
+    {
+        $this->updateOrderStatus($id, self::PREPARE_STATUS);
+        return true;
+    }
+
+    public function orderDelivery($id)
+    {
+        $this->updateOrderStatus($id, self::DELIVERY_STATUS);
+        return true;
     }
 
     public function updateOrderStatus($id, $status)

@@ -4,7 +4,7 @@ namespace App\Http\Controllers\Private;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Private\Product\StoreProductRequest;
-use App\Http\Resources\Public\ProductListResource;
+use App\Http\Requests\Private\Product\UpdateProductRequest;
 use App\Http\Resources\Public\ProductResource;
 use App\Models\Category;
 use App\Models\Product;
@@ -41,7 +41,7 @@ class ProductController extends Controller
         // dd($products);
         return $this->response([
             // 'data' => new ProductListResource($products),
-            'data'=>$products->getItem()
+            'data' => $products->getItem(),
         ]);
     }
 
@@ -120,9 +120,14 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateProductRequest $request, $id)
     {
-
+        $productRepository = new ProductRepository();
+        $requestData = $request->convert();
+        $product = $productRepository->updateProduct($id, $requestData);
+        return $this->response([
+            'data' => $product,
+        ]);
     }
 
     /**

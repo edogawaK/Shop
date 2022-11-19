@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Sale extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     const COL_ID = 'sale_id';
     const COL_DISCOUNT = 'sale_discount';

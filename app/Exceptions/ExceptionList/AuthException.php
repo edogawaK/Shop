@@ -33,4 +33,9 @@ class AuthException
         'message' => 'Vui lòng đăng nhập để tiếp tục',
         'code' => 404,
     ];
+
+    const EmailNotExist = [
+        'message' => 'Email không tồn tại',
+        'code' => 404,
+    ];
 }

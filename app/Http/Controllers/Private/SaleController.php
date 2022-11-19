@@ -19,7 +19,9 @@ class SaleController extends Controller
     {
         $saleRepository = new SaleRepository();
         $sales = $saleRepository->getSales();
-        return SaleResource::collection($sales);
+        return $this->response([
+            'data' => SaleResource::collection($sales),
+        ]);
     }
 
     /**
@@ -33,7 +35,9 @@ class SaleController extends Controller
         $saleRepository = new SaleRepository();
         $RequestData = $request->convert();
         $sale = $saleRepository->storeSale($RequestData);
-        return new SaleResource($sale);
+        return $this->response([
+            'data' => new SaleResource($sale),
+        ]);
     }
 
     /**

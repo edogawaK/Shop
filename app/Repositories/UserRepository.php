@@ -8,6 +8,7 @@ use App\Http\Resources\Public\UserResource;
 use App\Mail\AuthMail;
 use App\Models\Locate;
 use App\Models\User;
+use const App\Exceptions\AuthException;
 use Error;
 use Exception;
 use Illuminate\Support\Facades\Auth;
@@ -116,22 +117,32 @@ class UserRepository
         });
     }
 
-    public function logout($id)
+    public function logout($user)
     {
-        $user = $this->getUserModel($id);
-        $user->currentAccessToken()->delete();
+        return $user->currentAccessToken()->delete();
         return true;
     }
 
-    public function forgot($user, $password)
+    public function resetPassword($user, $password)
     {
         $accessToken = $this->verify($user);
         if ($accessToken) {
-            $user->{User::COL_PASSWORD} = $password;
+            $user->{User::COL_PASSWORD} = bcrypt($password);
             $user->save();
             return $accessToken;
         }
         return null;
+    }
+
+    public function forgotPassword($email)
+    {
+        $user = User::where(User::COL_EMAIL, $email)->get()[0];
+        if ($user) {
+            $tokenVerify = $user->createToken($this->tokenVerify, $this->abilityVerify)->plainTextToken;
+            $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify);
+        } else {
+            throw new Error(...AuthException::EmailNotExist);
+        }
     }
 
     public function verify($user)

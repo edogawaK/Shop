@@ -15,7 +15,8 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:sanctum', 'abilities:verify'])->only(['verifyEmail']);
+        $this->middleware(['auth:sanctum', 'abilities:verify'])->only(['verifyEmail', 'resetPassword']);
+        $this->middleware(['auth:sanctum', 'abilities:user'])->only(['logout']);
     }
 
     public function signin(SigninRequest $request)
@@ -34,17 +35,12 @@ class AuthController extends Controller
         ]);
     }
 
-    public function verifyEmail(Request $request)
-    {
-        
-    }
-
-    public function forgotPassword(Request $request)
+    public function resetPassword(Request $request)
     {
         $user = $request->user();
         $userRepository = new UserRepository();
 
-        $accessToken = $userRepository->forgot($user, $request->password);
+        $accessToken = $userRepository->resetPassword($user, $request->password);
 
         if ($accessToken) {
             return $this->response([
@@ -55,8 +51,16 @@ class AuthController extends Controller
         throw new Error(...AuthException::ForgotFail);
     }
 
-    public function verifyAccount($user)
+    public function forgotPassword(Request $request)
     {
+        $userRepository = new UserRepository();
+        $userRepository->forgotPassword($request->email);
+        return $this->response([]);
+    }
+
+    public function verifyAccount(Request $request)
+    {
+        $user = $request->user();
         $userRepository = new UserRepository();
 
         $accessToken = $userRepository->verify($user);
@@ -70,10 +74,11 @@ class AuthController extends Controller
         throw new Error(...AuthException::VerifyFail);
     }
 
-    public function logout(Request $request, $id)
+    public function logout(Request $request)
     {
+        $user = $request->user();
         $userRepository = new UserRepository();
-        $result = $userRepository->logout($id);
+        $result = $userRepository->logout($user);
         return $this->response([
             'data' => $result,
         ]);

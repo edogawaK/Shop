@@ -127,6 +127,7 @@ return new class extends Migration
             $table->unsignedInteger('product_id');
             $table->unsignedInteger('size_id');
             $table->integer('quantity');
+            $table->dateTime('update_at')->useCurrent();
 
             $table->primary(['product_id', 'size_id']);
 

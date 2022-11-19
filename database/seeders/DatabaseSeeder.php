@@ -4,6 +4,7 @@ namespace Database\Seeders;
 
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
+use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Image;
 use App\Models\Product;
@@ -26,6 +27,14 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
+
+        Admin::create([
+            Admin::COL_EMAIL => 'admin@kr.com',
+            Admin::COL_NAME => 'admin_root',
+            Admin::COL_PASSWORD => bcrypt('admin'),
+            Admin::COL_PHONE => '0987654321',
+            Admin::COL_ROLE => 0,
+        ]);
 
         Size::insert([
             ["size_name" => "S"],
@@ -51,11 +60,11 @@ class DatabaseSeeder extends Seeder
                     "product_cost" => 100000,
                     "product_desc" => $product['descript'],
                     "product_avt" => $product['image'][0],
-                    "category_id" => $category
+                    "category_id" => $category,
                 ]);
                 foreach ($product['image'] as $i) {
-                    $image=$model->images()->create(["image_link" => $i]);
-                    $model->update(['product_avt'=>$image->{Image::COL_ID}]);
+                    $image = $model->images()->create(["image_link" => $i]);
+                    $model->update(['product_avt' => $image->{Image::COL_ID}]);
                 }
                 $model->sizes()->attach([
                     1 => ["quantity" => 10],

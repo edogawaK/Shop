@@ -2,7 +2,6 @@
 
 namespace App\Repositories;
 
-use App\Models\Category;
 use App\Models\Product;
 use App\Models\Size;
 use Error;
@@ -17,7 +16,7 @@ class ProductRepository
     const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
     const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
 
-    private $pageSize = 1;
+    private $pageSize = 10;
 
     public function getProductDetail($id)
     {
@@ -60,13 +59,23 @@ class ProductRepository
 
             $product->update($data);
 
-            if ($data['quantity'] && $data['size']) {
-                if (!$this->updateQuantity($data[Product::COL_ID], $data['size'], $data['quantity'])) {
-                    throw new Exception("khong the cap nhat sl");
+            if ($data['sizes']) {
+                foreach ($data['sizes'] as $size) {
+                    if ($size['quantity'] && $size[Size::COL_ID]) {
+                        if (!$this->updateQuantity($id, $size[Size::COL_ID], $size['quantity'])) {
+                            throw new Exception("khong the cap nhat sl");
+                        }
+                    }
+                }
+            } else {
+                if ($data['quantity'] && $data['size']) {
+                    if (!$this->updateQuantity($id, $data['size'], $data['quantity'])) {
+                        throw new Exception("khong the cap nhat sl");
+                    }
                 }
             }
 
-            return true;
+            return $product->fresh();
         });
     }
 
@@ -131,6 +140,7 @@ class ProductRepository
             default:
                 $sizeInfo->pivot->quantity = $quantity;
         }
+        $sizeInfo->pivot->update_at = date('Y-m-d H:i:s');
         return $sizeInfo->pivot->save();
     }
 

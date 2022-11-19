@@ -4,6 +4,7 @@ use App\Http\Controllers\Private\AuthController as AdminAuth;
 use App\Http\Controllers\Private\CategoryController;
 use App\Http\Controllers\Private\ImageController;
 use App\Http\Controllers\Private\ProductController;
+use App\Http\Controllers\Private\SaleController;
 use App\Http\Controllers\Private\SizeController;
 use Illuminate\Support\Facades\Route;
 
@@ -21,11 +22,12 @@ use Illuminate\Support\Facades\Route;
 //---------------------------------------------private route
 Route::group(['prefix' => 'admin'], function () {
 
-    Route::apiResource('products', ProductController::class);
     Route::apiResource('products.images', ImageController::class)->parameters([
         'products'=>'productId',
         'images'=>'id',
     ]);
+    Route::apiResource('products', ProductController::class);
+    Route::apiResource('sales', SaleController::class);
     // Route::apiResource('products.rates', RateController::class)->only(['index', 'store', 'update', 'destroy'])->parameters([
     //     'products' => 'productId',
     //     'rates' => 'id',
