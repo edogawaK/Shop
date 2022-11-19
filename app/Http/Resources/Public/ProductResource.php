@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
+use App\Repositories\ImageRepository;
 use App\Repositories\SaleRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -26,7 +28,11 @@ class ProductResource extends JsonResource
                 $saleRepository = new SaleRepository();
                 return $saleRepository->getSalePrice($this->{Product::COL_ID});
             }),
-            'avt' => $this->{Product::COL_AVT},
+            'avt' => $this->when($this->{Product::COL_AVT}, function () {
+                $imageRepository = new ImageRepository();
+                $image = $imageRepository->getImageModel($this->{Product::COL_AVT});
+                return $image->{Image::COL_LINK};
+            }),
             'status' => $this->{Product::COL_STATUS},
 
             //detail

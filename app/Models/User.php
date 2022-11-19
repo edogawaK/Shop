@@ -25,6 +25,7 @@ class User extends Authenticatable
     public const COL_LOCATE = 'locate_id';
     public const COL_POINT = 'user_point';
     public const COL_STATUS = 'user_status';
+    public const COL_VERIFY = 'user_verify';
 
     public $table = "user";
     public $primaryKey = self::COL_ID;
@@ -34,6 +35,7 @@ class User extends Authenticatable
         self::COL_PASSWORD,
         self::COL_EMAIL,
         self::COL_LOCATE,
+        self::COL_VERIFY,
     ];
 
     protected $hidden = [

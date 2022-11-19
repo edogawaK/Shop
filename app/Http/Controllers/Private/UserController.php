@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private;
 
 use App\Http\Controllers\Controller;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -14,7 +15,8 @@ class UserController extends Controller
      */
     public function index()
     {
-        //
+        $userRepository = new UserRepository();
+        $userRepository->getUsers() / '';
     }
 
     /**
@@ -36,7 +38,8 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $userRepository = new UserRepository();
+        $userRepository->getUser(id:0);
     }
 
     /**
@@ -48,7 +51,8 @@ class UserController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $userRepository = new UserRepository();
+        $userRepository->updateUser();
     }
 
     /**

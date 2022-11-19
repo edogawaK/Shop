@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Public\ProductResource;
+use App\Models\Admin;
 use App\Models\Category;
 use App\Models\Product;
 use App\Repositories\ProductRepository;

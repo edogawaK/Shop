@@ -52,9 +52,10 @@ class DatabaseSeeder extends Seeder
                     "product_avt" => $product['image'][0],
                     "category_id" => $category
                 ]);
-                $model->images()->createMany(array_map(function ($i) {
-                    return ["image_link" => $i];
-                }, $product['image']));
+                foreach ($product['image'] as $i) {
+                    $model->images()->create(["image_link" => $i]);
+                    $model->update(['product_avt'=>$i]);
+                }
                 $model->sizes()->attach([
                     1 => ["quantity" => 10],
                     2 => ["quantity" => 10],

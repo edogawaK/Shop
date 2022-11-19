@@ -2,41 +2,55 @@
 
 namespace App\Repositories;
 
+use App\Exceptions\ExceptionList\AuthException;
+use App\Exceptions\ExceptionList\UserException;
 use App\Http\Resources\Public\UserResource;
+use App\Mail\AuthMail;
 use App\Models\Locate;
 use App\Models\User;
 use Error;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Throwable;
+use Illuminate\Support\Facades\Mail;
 
 class UserRepository
 {
+    use Effects;
+
     public $tokenName = 'user_token';
+    public $tokenVerify = 'verify_token';
+    public $abilityVerify = ['verify'];
     public $abilities = ['user'];
     public $pageSize = 10;
 
-    public function getUsers()
+    public function getUsers($option)
     {
+        $query = new User();
+
+        $query = $this->attachFilter($query, $option['filters'] ?? null);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode']);
+
         $users = User::paginate($this->pageSize);
-        return UserResource::collection($users);
+        return $users;
+
     }
 
     public function getUser($id)
     {
         $user = $this->getUserModel($id);
-        return new UserResource($user);
+        return $user;
     }
 
-    public function updateUser($id, $data)
+    public function updateUser($id, $params)
     {
-        $user = User::find($id)->update($data);
-        return new UserResource($user);
+        $user = User::find($id)->update($params);
+        return $user;
     }
 
-    public function storeUser($data)
+    public function storeUser($params)
     {
-        $user = User::create($data);
+        $user = User::create($params);
         return new UserResource($user);
     }
 
@@ -46,7 +60,15 @@ class UserRepository
         if ($user) {
             return $user;
         }
-        throw new Error('User khong ton tai', 404);
+        throw new Exception(...UserException::NotFound);
+    }
+
+    public function getProfile($id)
+    {
+        // $user=$this->getUserModel($id);
+        // if($user->{User::COL_STATUS}==0){
+        //     $this->get
+        // }
     }
 
     public function signin($email, $password)
@@ -56,31 +78,79 @@ class UserRepository
             'password' => $password,
         ])) {
             $user = Auth::user();
-            $user->token = $user->createToken($this->tokenName, $this->abilities)->plainTextToken;
-            return new UserResource($user);
+            if ($user->{User::COL_STATUS} == 1) {
+                $user->token = $user->createToken($this->tokenName, $this->abilities)->plainTextToken;
+                return new UserResource($user);
+            }
+            throw new Error(...AuthException::NotVerify);
         }
-        throw new Error('Signin fail!');
+        throw new Error(...AuthException::SiginFail);
     }
 
     public function signup($data)
     {
         DB::transaction(function () use ($data) {
             try {
+
                 $data[User::COL_PASSWORD] = bcrypt($data[User::COL_PASSWORD]);
                 $data[Locate::COL_RECEIVER] = $data[User::COL_NAME];
-                
+
                 $locate = Locate::create($data);
                 $data[Locate::COL_ID] = $locate->{Locate::COL_ID};
                 $user = $this->storeUser($data);
-            } catch (Throwable $error) {
-                throw new Error('Đăng ký không thành công');
+                $tokenVerify = $user->createToken($this->tokenVerify, $this->abilityVerify)->plainTextToken;
+
+                $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify);
+
+            } catch (\Illuminate\Database\QueryException$e) {
+
+                $errorCode = $e->errorInfo[1];
+                if ($errorCode == 1062) {
+                    throw new Error(...UserException::EmailExisted);
+                }
+                throw new Error(...AuthException::SignupFail);
+
             }
+
             return true;
         });
     }
 
-    public function renderToken($id)
+    public function logout($id)
     {
+        $user = $this->getUserModel($id);
+        $user->currentAccessToken()->delete();
+        return true;
+    }
 
+    public function forgot($user, $password)
+    {
+        $accessToken = $this->verify($user);
+        if ($accessToken) {
+            $user->{User::COL_PASSWORD} = $password;
+            $user->save();
+            return $accessToken;
+        }
+        return null;
+    }
+
+    public function verify($user)
+    {
+        if ($user->tokenCan($this->abilityVerify[0])) {
+            $user->{User::COL_VERIFY} = null;
+            $user->{User::COL_STATUS} = 1;
+            $user->save();
+
+            $user->currentAccessToken()->delete();
+            $accessToken = $user->createToken($this->tokenName, $this->abilities)->plainTextToken;
+
+            return $accessToken;
+        }
+        return null;
+    }
+
+    public function sendEmailVerify($email, $verifyCode)
+    {
+        Mail::to($email)->send(new AuthMail($verifyCode));
     }
 }

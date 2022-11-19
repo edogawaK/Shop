@@ -16,4 +16,8 @@ class Image extends Model
     public $table = "image";
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
+    public $fillable = [
+        self::COL_LINK,
+        self::COL_PRODUCT,
+    ];
 }

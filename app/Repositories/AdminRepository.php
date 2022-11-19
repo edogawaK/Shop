@@ -4,6 +4,7 @@ namespace App\Repositories;
 
 use App\Models\Admin;
 use Error;
+use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
 
 class AdminRepository
@@ -12,12 +13,23 @@ class AdminRepository
     public $tokenName = 'admin_token';
     public $abilities = ['admin'];
 
+    /**
+     * Get all admin account.
+     *
+     * @return Illuminate\Support\Collection
+     */
     public function getAdmins()
     {
         $admins = Admin::paginate($this->pageSize);
         return $admins;
     }
 
+    /**
+     * Transform the resource into an array.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
+     */
     public function getAdmin($id)
     {
         $admin = $this->getAdminModel($id);

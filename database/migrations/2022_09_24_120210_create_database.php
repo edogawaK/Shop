@@ -49,8 +49,9 @@ return new class extends Migration
             $table->string('user_name');
             $table->string('user_password');
             $table->string('user_email')->unique();
-            $table->integer('user_status')->default(1);
+            $table->integer('user_status')->default(0);
             $table->double('user_point')->default(100);
+            $table->double('user_verify')->nullable();
             $table->unsignedInteger('locate_id');
 
             $table->foreign('locate_id')->references('locate_id')->on('locate');

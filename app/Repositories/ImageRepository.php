@@ -3,15 +3,16 @@
 namespace App\Repositories;
 
 use App\Models\Image;
-use App\Models\Product;
 use Error;
-use Exception;
-use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Storage;
+use PharIo\Manifest\Url;
 
-class ImageRepoitory
+class ImageRepository
 {
-
+    const EXTERNAL_HOST='https://freeimage.host/api/1/upload';
+    const EXTERNAL_KEY='6d207e02198a847aa98d0a2a901485a5';
+    
     public function getImages($productId)
     {
         $images = Image::where(Image::COL_PRODUCT, $productId)->get();
@@ -28,20 +29,25 @@ class ImageRepoitory
     {
         $productRepoitory = new ProductRepository();
         $product = $productRepoitory->getProductModel($data[Image::COL_PRODUCT]);
-        $this->uploadImage($data['image']);
-        $image = $product->images()->create($data);
+        $url = $this->uploadImage($data['image']);
+        $image = $product->images()->create([
+            Image::COL_LINK => $url,
+        ]);
         return $image;
     }
 
     public function destroyImage($id)
     {
-        $image = Image::find($id);
-        Storage::disk('public')->delete('images/' . $image->{Image::COL_LINK});
+        $image=Image::find($id);
+        $image->delete();
+        return true;
     }
 
-    public function uploadImage($image){
-        $imageUrl = $image->store('images', 'public');
-        return $imageUrl;
+    public function uploadImage($image)
+    {
+        $sourceData=base64_encode(file_get_contents($image));
+        $response=Http::attach('source', $sourceData)->post(self::EXTERNAL_HOST, ['key'=>self::EXTERNAL_KEY])->json();
+        return $response['image']['url'];
     }
 
     public function getImageModel($id)
@@ -52,10 +58,4 @@ class ImageRepoitory
         }
         throw new Error('Image Not Found');
     }
-
-    // public function getRatePoint($id){
-    //     $product=$this->getProductModel($id);
-    //     $rates=$product->rates()->count();
-    //     return
-    // }
 }

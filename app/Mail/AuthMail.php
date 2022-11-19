@@ -3,22 +3,21 @@
 namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
-use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
-class ShoiiMail extends Mailable
+class AuthMail extends Mailable
 {
     use Queueable, SerializesModels;
-
+    public $verifyToken;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($verifyToken)
     {
-        //
+        $this->verifyToken = $verifyToken;
     }
 
     /**
@@ -28,6 +27,6 @@ class ShoiiMail extends Mailable
      */
     public function build()
     {
-        return $this->view('view.auth');
+        return $this->view('auth', ['code' => $this->verifyToken]);
     }
 }

@@ -9,6 +9,15 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
+/**
+ * Class User
+ * About the User Entity
+ * @package App\Models
+ *
+ * ==== Properties - Fields
+ * @property string admin_id
+ * @property string admin_
+ */
 class Admin extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, SoftDeletes;
@@ -24,6 +33,8 @@ class Admin extends Authenticatable
     public $table = "admin";
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
+
+    public $fillable=[$this->admin_id]
 
     public function getAuthPassword()
     {

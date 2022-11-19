@@ -18,5 +18,5 @@ use Illuminate\Support\Facades\Route;
 Route::group([], __DIR__ . '/admin.php');
 Route::group([], __DIR__ . '/user.php');
 Route::get('/nkkn',function(){
-    Mail::mailer('mailgun')->send(new GuiEmail());
+    Mail::to('kisenguyen1410263@gmail.com')->send(new GuiEmail());
 });

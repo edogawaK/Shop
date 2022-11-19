@@ -5,7 +5,6 @@ use App\Http\Controllers\Private\CategoryController;
 use App\Http\Controllers\Private\ImageController;
 use App\Http\Controllers\Private\ProductController;
 use App\Http\Controllers\Private\SizeController;
-use App\Models\Product;
 use Illuminate\Support\Facades\Route;
 
 /*

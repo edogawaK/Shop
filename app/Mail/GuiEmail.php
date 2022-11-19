@@ -31,6 +31,6 @@ class GuiEmail extends Mailable
             ->from('shoii.sgu@gmail.com', 'Shoii')
             ->to('kisenguyen1410263@gmail.com')
             ->subject('NKKN')
-            ->view('mail');
+            ->view('auth',['code'=>1234]);
     }
 }

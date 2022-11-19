@@ -13,12 +13,6 @@ class ProductRepository
 {
     use Effects;
 
-    public function __construct()
-    {
-        $this->filtables = [Product::COL_CATEGORY, Product::COL_PRICE];
-        $this->sortables = [Product::COL_PRICE, Product::COL_DATE, Product::COL_COST, Product::COL_RATE, Product::COL_SOLD];
-    }
-
     const UPDATE_QUANTITY = 'UPDATE_QUANTITY';
     const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
     const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
@@ -76,18 +70,18 @@ class ProductRepository
         });
     }
 
-    public function updateImages($id, $data)
-    {
-        return DB::transaction(function () use ($data, $id) {
-            $product = $this->getProductModel($id);
+    // public function updateImages($id, $data)
+    // {
+    //     return DB::transaction(function () use ($data, $id) {
+    //         $product = $this->getProductModel($id);
 
-            $avatarUrl = $this->uploadImage($product->{Product::COL_ID}, $data['avatar']);
-            $product->update([Product::COL_AVT => $avatarUrl]);
-            foreach ($data['images'] as $image) {
-                $this->uploadImage($product->{Product::COL_ID}, $image);
-            }
-        });
-    }
+    //         $avatarUrl = $this->uploadImage($product->{Product::COL_ID}, $data['avatar']);
+    //         $product->update([Product::COL_AVT => $avatarUrl]);
+    //         foreach ($data['images'] as $image) {
+    //             $this->uploadImage($product->{Product::COL_ID}, $image);
+    //         }
+    //     });
+    // }
 
     public function isRunOut(Product $product)
     {
@@ -158,15 +152,15 @@ class ProductRepository
         return $sizeInfo;
     }
 
-    public function uploadImage($productId, $image)
-    {
-        $imageUrl = $image->store('images', 'public');
-        $imageModel = Image::create([
-            Image::COL_LINK => $image,
-            Image::COL_PRODUCT => $productId,
-        ]);
-        return $imageModel->{Image::COL_ID};
-    }
+    // public function uploadImage($productId, $image)
+    // {
+    //     $imageUrl = $image->store('images', 'public');
+    //     $imageModel = Image::create([
+    //         Image::COL_LINK => $image,
+    //         Image::COL_PRODUCT => $productId,
+    //     ]);
+    //     return $imageModel->{Image::COL_ID};
+    // }
 
     // public function getRatePoint($id){
     //     $product=$this->getProductModel($id);
