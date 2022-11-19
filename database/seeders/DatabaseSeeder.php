@@ -5,6 +5,7 @@ namespace Database\Seeders;
 // use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 use App\Models\Category;
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
 use Illuminate\Database\Seeder;
@@ -53,8 +54,8 @@ class DatabaseSeeder extends Seeder
                     "category_id" => $category
                 ]);
                 foreach ($product['image'] as $i) {
-                    $model->images()->create(["image_link" => $i]);
-                    $model->update(['product_avt'=>$i]);
+                    $image=$model->images()->create(["image_link" => $i]);
+                    $model->update(['product_avt'=>$image->{Image::COL_ID}]);
                 }
                 $model->sizes()->attach([
                     1 => ["quantity" => 10],

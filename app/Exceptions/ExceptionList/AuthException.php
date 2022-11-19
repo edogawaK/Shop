@@ -28,4 +28,9 @@ class AuthException
         'message' => 'Đổi mật khẩu không thành công',
         'code' => 404,
     ];
+
+    const AuthRequire = [
+        'message' => 'Vui lòng đăng nhập để tiếp tục',
+        'code' => 404,
+    ];
 }

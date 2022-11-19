@@ -18,12 +18,13 @@ class CategoryRepository
     }
     public function updateCategory($id, $data)
     {
-        $category = Category::find($id)->update($data);
+        $category = Category::find($id);
+        $category->update($data);
         return $category;
     }
     public function destroyCategory($id)
     {
-        $category = Category::find($id)->delete();
-        return $category;
+        $result = Category::find($id)->delete();
+        return $result;
     }
 }

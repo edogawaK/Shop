@@ -86,7 +86,6 @@ class SizeController extends Controller
     public function destroy($id)
     {
         $sizeRepository = new SizeRepository();
-
         $result = $sizeRepository->destroySize($id);
         return $this->response([
             'data' => $result,

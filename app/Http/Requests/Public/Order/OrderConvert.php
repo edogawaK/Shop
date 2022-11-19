@@ -11,13 +11,7 @@ trait OrderConvert
     {
         return [
             Order::COL_LOCATE => $this->locateId,
-            'detail' => array_map(function ($detail) {
-                $data = [];
-                $data[OrderDetail::COL_PRODUCT] = $detail['productId'];
-                $data[OrderDetail::COL_SIZE] = $detail['sizeId'];
-                $data[OrderDetail::COL_QUANTITY] = $detail['quantity'];
-                return $data;
-            }, $this->detail),
+            'detail' => $this->detail,
         ];
     }
 }

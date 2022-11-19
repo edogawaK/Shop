@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Cart;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
@@ -11,6 +12,11 @@ use Illuminate\Support\Facades\DB;
 
 class OrderRepository
 {
+    const CANCEL_STATUS = 0;
+    const PREPARE_STATUS = 1;
+    const DELIVERY_STATUS = 2;
+    const RECEIVE_STATUS = 3;
+
     public function getOrders($userId, $options = ['filters' => [], 'sort' => null, 'sortMode' => null])
     {
         $orders = User::find($userId)->orders;
@@ -20,29 +26,46 @@ class OrderRepository
     public function getOrder($id, $userId)
     {
         $order = $this->getOrderModel($id);
-        if($order->{Order::COL_USER} == $userId){
+        if ($order->{Order::COL_USER} == $userId) {
             return $order;
         }
-        throw new Error('Khong tim thay order ID: '.$id);
+        throw new Error('Khong tim thay order ID: ' . $id);
     }
 
     public function storeOrder($order, $detail)
     {
         return DB::transaction(function () use ($order, $detail) {
             $productRepository = new ProductRepository();
+            $cartRepository = new CartRepository();
             $order = Order::create($order);
             $total = 0;
+
             foreach ($detail as $detailItem) {
-                $isAvailableProduct = $productRepository->isAvailable($detailItem[OrderDetail::COL_PRODUCT], $detailItem[OrderDetail::COL_SIZE], $detailItem[OrderDetail::COL_QUANTITY]);
+                $cart = $cartRepository->getCartModel($detailItem);
+                $isAvailableProduct = $productRepository->isAvailable($cart->{Cart::COL_PRODUCT}, $cart->{Cart::COL_SIZE}, $cart->{Cart::COL_QUANTITY});
+
                 if ($isAvailableProduct) {
-                    $order->detail()->create($detailItem);
-                    $productRepository->updateQuantity($detailItem[OrderDetail::COL_PRODUCT], $detailItem[OrderDetail::COL_SIZE], $detailItem[OrderDetail::COL_QUANTITY], ProductRepository::DECREASE_QUANTITY);
-                    $total += Product::find($detailItem[OrderDetail::COL_PRODUCT])->{Product::COL_PRICE};
+
+                    $order->detail()->create([
+                        OrderDetail::COL_ORDER => $order->{Order::COL_ID},
+                        OrderDetail::COL_PRODUCT => $cart->{Cart::COL_PRODUCT},
+                        OrderDetail::COL_SIZE => $cart->{Cart::COL_SIZE},
+                        OrderDetail::COL_QUANTITY => $cart->{Cart::COL_QUANTITY},
+                    ]);
+
+                    $productRepository->updateQuantity($cart->{Cart::COL_PRODUCT}, $cart->{Cart::COL_SIZE}, $cart->{Cart::COL_QUANTITY}, ProductRepository::DECREASE_QUANTITY);
+                    $total += Product::find($cart->{Cart::COL_PRODUCT})->{Product::COL_PRICE};
+
+                    $cart->delete();
+
                 } else {
                     throw new Error('Không thể đặt hàng do không đủ số lượng');
                 }
             }
-            return $order;
+
+            $order->{Order::COL_TOTAL} = $total;
+            $order->save();
+            return $order->fresh();
         });
     }
 
@@ -51,7 +74,7 @@ class OrderRepository
         $productRepository = new ProductRepository();
         DB::transaction(function () use ($productRepository, $id) {
             $order = Order::find($id);
-            $order->{Order::COL_STATUS} = -1;
+            $order->{Order::COL_STATUS} = self::CANCEL_STATUS;
             $order->save();
 
             $detail = $order->detail;
@@ -68,11 +91,6 @@ class OrderRepository
         $order->{Order::COL_STATUS} = $status;
         $order->save();
         return $order;
-    }
-
-    public function createOrderFromCart($data)
-    {
-        // +$cartRepository=new CartRepository();
     }
 
     public function isProductInOrder($id, $productId)

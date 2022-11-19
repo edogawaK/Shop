@@ -24,7 +24,6 @@ class Order extends Model
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
     public $fillable = [
-        self::COL_ID,
         self::COL_DATE,
         self::COL_RECEIVE,
         self::COL_SHIP,

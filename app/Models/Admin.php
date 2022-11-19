@@ -34,7 +34,11 @@ class Admin extends Authenticatable
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
 
-    public $fillable=[$this->admin_id]
+    public $fillable=[
+        self::COL_EMAIL,
+        self::COL_NAME,
+        self::COL_PHONE,
+    ];
 
     public function getAuthPassword()
     {

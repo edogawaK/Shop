@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Private;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Private\Category\StoreCategoryRequest;
+use App\Http\Requests\Private\Category\UpdateCategoryRequest;
 use App\Http\Requests\Public\Cart\StoreCartRequest;
 use App\Http\Resources\Public\CategoryResource;
 use App\Repositories\CategoryRepository;
@@ -63,7 +64,7 @@ class CategoryController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UpdateCategoryRequest $request, $id)
     {
         $categoryRepository = new CategoryRepository();
         $requestData = $request->convert();
@@ -84,7 +85,7 @@ class CategoryController extends Controller
         $categoryRepository = new CategoryRepository();
         $result = $categoryRepository->destroyCategory($id);
         return $this->response([
-            'data' => new CategoryResource($result),
+            'data' => ($result),
         ]);
     }
 }

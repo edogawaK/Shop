@@ -2,7 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Models\Image;
+use App\Models\Category;
 use App\Models\Product;
 use App\Models\Size;
 use Error;
@@ -17,7 +17,7 @@ class ProductRepository
     const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
     const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
 
-    private $pageSize = 10;
+    private $pageSize = 1;
 
     public function getProductDetail($id)
     {
@@ -33,7 +33,7 @@ class ProductRepository
         $query = $query->where(Product::COL_STATUS, 1);
 
         $query = $this->attachFilter($query, $option['filters'] ?? null);
-        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode']);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? 'asc');
 
         $products = $query->paginate($this->pageSize);
         return $products;

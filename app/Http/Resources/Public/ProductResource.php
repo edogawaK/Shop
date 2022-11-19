@@ -41,6 +41,14 @@ class ProductResource extends JsonResource
                 'images' => ImageResource::collection($this->images),
                 'sizes' => $this->getProductAmount($this->sizes),
             ]),
+
+            //admin
+            $this->mergeWhen($request->user() ? $request->user()->tokenCan('admin') : null, [
+                'cost' => $this->{Product::COL_COST},
+            ]),
+
+            'total'=>$this->when($this->total, $this->total),
+            'pageSize'=>$this->when($this->per_page, $this->per_page),
         ];
     }
 

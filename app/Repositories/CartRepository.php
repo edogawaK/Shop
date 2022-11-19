@@ -2,9 +2,7 @@
 
 namespace App\Repositories;
 
-use App\Http\Resources\Public\CartResource;
 use App\Models\Cart;
-use App\Models\User;
 use Error;
 use Exception;
 
@@ -14,18 +12,30 @@ class CartRepository
 
     public function getCart($userId)
     {
-        $userRepository=new UserRepository();
-        $user=$userRepository->getUserModel($userId);
+        $userRepository = new UserRepository();
+        $user = $userRepository->getUserModel($userId);
         $data = $user->carts;
         return $data;
     }
 
-    public function addToCart($data)
+    public function addToCart($params)
     {
         $productRepository = new ProductRepository();
-        $productAvailable = $productRepository->isAvailable($data[Cart::COL_PRODUCT], $data[Cart::COL_SIZE], $data[Cart::COL_QUANTITY]);
+        $productAvailable = $productRepository->isAvailable($params[Cart::COL_PRODUCT], $params[Cart::COL_SIZE], $params[Cart::COL_QUANTITY]);
         if ($productAvailable) {
-            return Cart::create($data);
+
+            $cart = Cart::where(Cart::COL_USER, $params[Cart::COL_USER])
+                ->where(Cart::COL_PRODUCT, $params[Cart::COL_PRODUCT])
+                ->where(Cart::COL_SIZE, $params[Cart::COL_SIZE])->get()[0] ?? null;
+
+            if ($cart) {
+                $cart->{Cart::COL_QUANTITY} += $params[Cart::COL_QUANTITY];
+                $cart->save();
+            } else {
+                $cart = Cart::create($params);
+            }
+
+            return $cart;
         }
         throw new Exception('Khong du so luong');
     }
@@ -51,11 +61,12 @@ class CartRepository
         throw new Exception("KHONG TIM THAY THONG TIN SP TRONG CART");
     }
 
-    public function getCartModel($id){
-        $cart=Cart::find($id);
-        if($cart){
+    public function getCartModel($id)
+    {
+        $cart = Cart::find($id);
+        if ($cart) {
             return $cart;
         }
-        throw new Error('Không tìm thấy cart có id: '.$id);
+        throw new Error('Không tìm thấy cart có id: ' . $id);
     }
 }

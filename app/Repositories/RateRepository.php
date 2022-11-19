@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\Rate;
@@ -50,7 +51,7 @@ class RateRepository
     {
         $userRepository = new UserRepository();
         $user = $userRepository->getUserModel($userId);
-        return ($user->orders()->whereHas('detail', function ($query) use ($productId) {
+        return ($user->orders()->where(Order::COL_STATUS, OrderRepository::RECEIVE_STATUS)->whereHas('detail', function ($query) use ($productId) {
             $query->where(OrderDetail::COL_PRODUCT, $productId);
         })->exists() && !$this->isRated($userId, $productId));
     }

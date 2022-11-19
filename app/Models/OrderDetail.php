@@ -19,7 +19,6 @@ class OrderDetail extends Model
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
     public $fillable = [
-        self::COL_ID,
         self::COL_ORDER,
         self::COL_PRODUCT,
         self::COL_QUANTITY,

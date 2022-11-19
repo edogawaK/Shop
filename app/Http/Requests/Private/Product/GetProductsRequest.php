@@ -1,12 +1,12 @@
 <?php
 
-namespace App\Http\Requests\Public\Order;
+namespace App\Http\Requests\Private\Product;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class StoreOrderRequest extends FormRequest
+class GetProductsRequest extends FormRequest
 {
-    use OrderConvert;
+    use ProductConvert;
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -14,7 +14,7 @@ class StoreOrderRequest extends FormRequest
      */
     public function authorize()
     {
-        return true;
+        return false;
     }
 
     /**
@@ -25,8 +25,7 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'locateId' => 'bail|required',
-            'detail' => 'bail|required|array',
+            //
         ];
     }
 }
