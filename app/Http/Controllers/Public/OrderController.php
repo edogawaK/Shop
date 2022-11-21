@@ -39,11 +39,11 @@ class OrderController extends Controller
     {
         $orderRepository = new OrderRepository();
         $requestData = $request->convert();
-        $userId = $request->user()->{User::COL_ID};
+        $user = $request->user();
 
         $orderData = [
-            Order::COL_USER => $userId,
-            Order::COL_LOCATE => $requestData[Order::COL_LOCATE],
+            Order::COL_USER => $user->{User::COL_ID},
+            Order::COL_LOCATE => $user->{User::COL_LOCATE},
         ];
 
         $detailData = $requestData['detail'];

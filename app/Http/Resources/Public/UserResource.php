@@ -19,6 +19,7 @@ class UserResource extends JsonResource
             'id' => $this->{User::COL_ID},
             'name' => $this->{User::COL_NAME},
             'email' => $this->{User::COL_EMAIL},
+            'phone' => $this->{User::COL_EMAIL},
             'status' => $this->{User::COL_STATUS},
             'token' => $this->when($this->token, $this->token),
         ];

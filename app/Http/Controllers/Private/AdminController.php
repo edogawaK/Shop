@@ -10,6 +10,6 @@ class AdminController extends Controller
 {
     public function index(){
         $adminRepository=new AdminRepository();
-        $adminRepository->getAdmins();
+        $adminRepository->getAdmins([]);
     }
 }

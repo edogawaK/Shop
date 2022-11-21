@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Public;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Public\UserResource;
+use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -36,7 +38,9 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+        $userRepository = new UserRepository();
+        $user = $userRepository->getUser($id);
+        return new UserResource($user);
     }
 
     /**

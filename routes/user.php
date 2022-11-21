@@ -33,8 +33,6 @@ Route::group([], function () {
         Route::get('verify-email', [AuthController::class, 'verifyAccount']);
         Route::get('forgot-password/{email}', [AuthController::class, 'forgotPassword']);
         Route::get('logout', [AuthController::class, 'logout']);
-        // Route::post('forgot', [AuthController::class, 'forgot']);
-        // Route::put('reset', [AuthController::class, 'reset']);
     });
 
 });

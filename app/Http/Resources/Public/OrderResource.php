@@ -20,13 +20,25 @@ class OrderResource extends JsonResource
             'date' => $this->{Order::COL_DATE},
             'receive' => $this->{Order::COL_RECEIVE},
             'total' => $this->{Order::COL_TOTAL},
-            'status' => $this->{Order::COL_STATUS},
+            'status' => $this->getOrderStatus(),
             'locateId' => $this->{Order::COL_LOCATE},
-            'detail'=>$this->getOrderProducts(),
+            'detail' => $this->getOrderProducts(),
         ];
     }
 
-    private function getOrderProducts(){
+    private function getOrderProducts()
+    {
         return OrderDetailResource::collection($this->detail);
+    }
+
+    private function getOrderStatus()
+    {
+        switch ($this->{Order::COL_STATUS}) {
+        case 0:return 'Đã hủy';
+        case 1:return 'Đang chuẩn bị hàng';
+        case 2:return 'Đang giao';
+        case 3:return 'Đã nhận';
+        default:return 'Không thể xác định';
+        }
     }
 }

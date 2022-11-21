@@ -10,7 +10,6 @@ trait OrderConvert
     public function convert()
     {
         return [
-            Order::COL_LOCATE => $this->locateId,
             'detail' => $this->detail,
         ];
     }

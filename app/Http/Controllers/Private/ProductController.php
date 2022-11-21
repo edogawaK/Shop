@@ -38,10 +38,11 @@ class ProductController extends Controller
             'sort' => $sortRules['rules'],
             'sortMode' => $sortRules['mode'],
         ]);
-        // dd($products);
         return $this->response([
-            // 'data' => new ProductListResource($products),
-            'data' => $products->getItem(),
+            'data' => ProductResource::collection($products),
+            'other' => [
+                'total' => $products->total(),
+            ],
         ]);
     }
 

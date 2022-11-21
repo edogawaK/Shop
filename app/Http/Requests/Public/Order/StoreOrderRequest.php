@@ -25,7 +25,6 @@ class StoreOrderRequest extends FormRequest
     public function rules()
     {
         return [
-            'locateId' => 'bail|required',
             'detail' => 'bail|required|array',
         ];
     }

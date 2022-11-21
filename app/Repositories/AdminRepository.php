@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Auth;
 
 class AdminRepository
 {
+    use Effects;
+
     public $pageSize = 10;
     public $tokenName = 'admin_token';
     public $abilities = ['admin'];
@@ -18,9 +20,13 @@ class AdminRepository
      *
      * @return Illuminate\Support\Collection
      */
-    public function getAdmins()
+    public function getAdmins($option)
     {
-        $admins = Admin::paginate($this->pageSize);
+        $query = new Admin();
+        $query = $this->attachFilter($query, $option['filters'] ?? null);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? 'asc');
+
+        $admins = $query->paginate($this->pageSize);
         return $admins;
     }
 
@@ -44,7 +50,7 @@ class AdminRepository
 
     public function updateAdmin($id, $data)
     {
-        $admin=$this->getAdminModel($id);
+        $admin = $this->getAdminModel($id);
         $admin->update($data);
         return $admin;
     }
@@ -55,12 +61,13 @@ class AdminRepository
         return true;
     }
 
-    public function getAdminModel($id){
-        $admin=Admin::find($id);
-        if($admin){
+    public function getAdminModel($id)
+    {
+        $admin = Admin::find($id);
+        if ($admin) {
             return $admin;
         }
-        throw new Error('Không tìm thấy admin có id: '.$id);
+        throw new Error('Không tìm thấy admin có id: ' . $id);
     }
 
     public function signin($email, $password)

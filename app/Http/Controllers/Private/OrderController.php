@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\Private;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Public\OrderResource;
+use App\Repositories\OrderRepository;
 use Illuminate\Http\Request;
 
 class OrderController extends Controller
@@ -14,7 +16,11 @@ class OrderController extends Controller
      */
     public function index()
     {
-        //
+        $orderRepository = new OrderRepository();
+        $orders = $orderRepository->getOrders();
+        return $this->response([
+            'data' => OrderResource::collection($orders),
+        ]);
     }
 
     /**
@@ -36,7 +42,9 @@ class OrderController extends Controller
      */
     public function show($id)
     {
-        //
+        $orderRepository = new OrderRepository();
+        $order = $orderRepository->getOrder($id, null);
+        return new OrderResource($order);
     }
 
     /**
@@ -48,7 +56,11 @@ class OrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $orderRepository = new OrderRepository();
+        $orderRepository->updateOrderStatus($id, $request->status);
+        return $this->response([
+            'data' => true,
+        ]);
     }
 
     /**

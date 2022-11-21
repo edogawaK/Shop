@@ -79,18 +79,16 @@ class ProductRepository
         });
     }
 
-    // public function updateImages($id, $data)
-    // {
-    //     return DB::transaction(function () use ($data, $id) {
-    //         $product = $this->getProductModel($id);
-
-    //         $avatarUrl = $this->uploadImage($product->{Product::COL_ID}, $data['avatar']);
-    //         $product->update([Product::COL_AVT => $avatarUrl]);
-    //         foreach ($data['images'] as $image) {
-    //             $this->uploadImage($product->{Product::COL_ID}, $image);
-    //         }
-    //     });
-    // }
+    public function getQuantityTotal($id)
+    {
+        $product = $this->getProductModel($id);
+        $sizeInfo = $product->sizes;
+        $total = 0;
+        foreach ($sizeInfo as $size) {
+            $total += $size->pivot->quantity;
+        }
+        return $total;
+    }
 
     public function isRunOut(Product $product)
     {

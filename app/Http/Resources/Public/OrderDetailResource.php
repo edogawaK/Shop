@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Image;
 use App\Models\OrderDetail;
 use App\Models\Product;
 use App\Models\Size;
@@ -17,25 +18,18 @@ class OrderDetailResource extends JsonResource
      */
     public function toArray($request)
     {
-        if ($request->routeIs('orders.show')) {
-            return [
-                'product' => [
-                    'id' => $this->product->{Product::COL_ID},
-                    'name' => $this->product->{Product::COL_NAME},
-                    'image' => $this->product->{Product::COL_AVT},
-                    'price' => $this->product->{Product::COL_PRICE},
-                ],
-                'size' => [
-                    'id' => $this->size->{Size::COL_ID},
-                    'name' => $this->size->{Size::COL_NAME},
-                    'quantity' => $this->{OrderDetail::COL_QUANTITY},
-                ],
-            ];
-        } else {
-            return [
+        return [
+            'product' => [
                 'id' => $this->product->{Product::COL_ID},
-                'image' => $this->product->{Product::COL_AVT},
-            ];
-        }
+                'name' => $this->product->{Product::COL_NAME},
+                'image' => $this->product->avatar->{Image::COL_LINK},
+                'price' => $this->product->{Product::COL_PRICE},
+            ],
+            'size' => [
+                'id' => $this->size->{Size::COL_ID},
+                'name' => $this->size->{Size::COL_NAME},
+                'quantity' => $this->{OrderDetail::COL_QUANTITY},
+            ],
+        ];
     }
 }

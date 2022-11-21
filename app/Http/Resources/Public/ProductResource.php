@@ -6,6 +6,7 @@ use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
 use App\Repositories\ImageRepository;
+use App\Repositories\ProductRepository;
 use App\Repositories\SaleRepository;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -45,10 +46,12 @@ class ProductResource extends JsonResource
             //admin
             $this->mergeWhen($request->user() ? $request->user()->tokenCan('admin') : null, [
                 'cost' => $this->{Product::COL_COST},
+                'sold' => $this->{Product::COL_SOLD},
+                'total' => app((ProductRepository::class))->getQuantityTotal($this->{Product::COL_ID}),
             ]),
 
-            'total'=>$this->when($this->total, $this->total),
-            'pageSize'=>$this->when($this->per_page, $this->per_page),
+            'total' => $this->when($this->total, $this->total),
+            'pageSize' => $this->when($this->per_page, $this->per_page),
         ];
     }
 

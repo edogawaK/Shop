@@ -57,13 +57,8 @@ class Product extends Model
         return $this->sizes()->wherePivot(Size::COL_ID, $sizeID);
     }
 
-    public function rates()
+    public function avatar()
     {
-        return $this->hasMany(Rate::class, Rate::COL_PRODUCT, self::COL_ID);
-    }
-
-    public function sale()
-    {
-        return $this->belongsTo(Sale::class, self::COL_SALE, Sale::COL_ID);
+        return $this->belongsTo(Image::class, self::COL_AVT, Image::COL_ID);
     }
 }

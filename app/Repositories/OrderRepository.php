@@ -21,9 +21,13 @@ class OrderRepository
 
     public $pageSize = 10;
 
-    public function getOrders($userId, $option)
+    public function getOrders($userId = null, $option = [])
     {
-        $query = User::find($userId)->orders();
+        if ($userId) {
+            $query = User::find($userId)->orders();
+        } else {
+            $query = new Order();
+        }
         $query = $this->attachFilter($query, $option['filters'] ?? null);
         $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? 'asc');
 
@@ -34,7 +38,12 @@ class OrderRepository
     public function getOrder($id, $userId)
     {
         $order = $this->getOrderModel($id);
-        if ($order->{Order::COL_USER} == $userId) {
+        if($userId){
+            if ($order->{Order::COL_USER} == $userId) {
+                return $order;
+            }
+        }
+        else{
             return $order;
         }
         throw new Error('Khong tim thay order ID: ' . $id);
