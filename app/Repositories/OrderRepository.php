@@ -38,12 +38,11 @@ class OrderRepository
     public function getOrder($id, $userId)
     {
         $order = $this->getOrderModel($id);
-        if($userId){
+        if ($userId) {
             if ($order->{Order::COL_USER} == $userId) {
                 return $order;
             }
-        }
-        else{
+        } else {
             return $order;
         }
         throw new Error('Khong tim thay order ID: ' . $id);
@@ -74,10 +73,9 @@ class OrderRepository
                     $product = Product::find($cart->{Cart::COL_PRODUCT});
                     $product->{Product::COL_SOLD} += $cart->{Cart::COL_QUANTITY};
                     $product->save();
-                    $total += Product::find($cart->{Cart::COL_PRODUCT})->{Product::COL_PRICE};
+                    $total += Product::find($cart->{Cart::COL_PRODUCT})->{Product::COL_PRICE} * $cart->{Cart::COL_QUANTITY};
 
                     $cart->delete();
-
                 } else {
                     throw new Error('Không thể đặt hàng do không đủ số lượng');
                 }

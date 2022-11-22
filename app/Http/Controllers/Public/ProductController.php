@@ -32,8 +32,12 @@ class ProductController extends Controller
             'sort' => $sortRules['rules'],
             'sortMode' => $sortRules['mode'],
         ]);
+
         return $this->response([
-            'data' => ProductResource::collection($products),
+            'data' =>ProductResource::collection($products),
+            'other' => [
+                'total' => $products->lastPage()
+            ],
         ]);
     }
 
@@ -41,13 +45,13 @@ class ProductController extends Controller
     {
         $filterRules = [];
         if ($request->category) {
-            $filterRules[Category::COL_ID] = [Category::COL_ID, '=', $request->category];
+            $filterRules[] = [Category::COL_ID, '=', $request->category];
         }
         if ($request->maxPrice) {
-            $filterRules[Product::COL_PRICE] = [Product::COL_PRICE, '<=', $request->maxPrice];
+            $filterRules[] = [Product::COL_PRICE, '<=', $request->maxPrice];
         }
         if ($request->minPrice) {
-            $filterRules[Product::COL_PRICE] = [Product::COL_PRICE, '>=', $request->minPrice];
+            $filterRules[] = [Product::COL_PRICE, '>=', $request->minPrice];
         }
         return $filterRules;
     }

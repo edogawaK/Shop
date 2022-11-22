@@ -16,7 +16,7 @@ class ProductRepository
     const DECREASE_QUANTITY = 'DECREASE_QUANTITY';
     const INCREASE_QUANTITY = 'INCREASE_QUANTITY';
 
-    private $pageSize = 10;
+    private $pageSize = 12;
 
     public function getProductDetail($id)
     {
@@ -30,7 +30,6 @@ class ProductRepository
     {
         $query = new Product();
         $query = $query->where(Product::COL_STATUS, 1);
-
         $query = $this->attachFilter($query, $option['filters'] ?? null);
         $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? 'asc');
 

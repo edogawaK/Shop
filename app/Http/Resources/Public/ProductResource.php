@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Category;
 use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
@@ -35,6 +36,8 @@ class ProductResource extends JsonResource
                 return $image->{Image::COL_LINK};
             }),
             'status' => $this->{Product::COL_STATUS},
+            'categoryId' => $this->{Product::COL_CATEGORY},
+            'category' => $this->category->{Category::COL_NAME},
 
             //detail
             $this->mergeWhen($this->detail, [

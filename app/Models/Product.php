@@ -57,6 +57,11 @@ class Product extends Model
         return $this->sizes()->wherePivot(Size::COL_ID, $sizeID);
     }
 
+    public function category()
+    {
+        return $this->belongsTo(Category::class, self::COL_CATEGORY, Category::COL_ID);
+    }
+
     public function avatar()
     {
         return $this->belongsTo(Image::class, self::COL_AVT, Image::COL_ID);
