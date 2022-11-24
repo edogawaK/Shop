@@ -2,8 +2,10 @@
 
 namespace App\Http\Resources\Public;
 
+use App\Models\Locate;
 use App\Models\Order;
 use Illuminate\Http\Resources\Json\JsonResource;
+use Locale;
 
 class OrderResource extends JsonResource
 {
@@ -21,7 +23,7 @@ class OrderResource extends JsonResource
             'receive' => $this->{Order::COL_RECEIVE},
             'total' => $this->{Order::COL_TOTAL},
             'status' => $this->getOrderStatus(),
-            'locateId' => $this->{Order::COL_LOCATE},
+            'address' => $this->locate->{Locate::COL_STREET},
             'detail' => $this->getOrderProducts(),
         ];
     }

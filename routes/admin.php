@@ -7,6 +7,7 @@ use App\Http\Controllers\Private\OrderController;
 use App\Http\Controllers\Private\ProductController;
 use App\Http\Controllers\Private\SaleController;
 use App\Http\Controllers\Private\SizeController;
+use App\Http\Controllers\Private\UserController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -30,6 +31,7 @@ Route::group(['prefix' => 'admin'], function () {
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('sizes', SizeController::class);
     Route::apiResource('orders', OrderController::class);
+    Route::apiResource('users', UserController::class);
     // Route::apiResource('profile', UserController::class)->only(['show', 'update']);
     Route::group(['prefix' => 'auth'], function () {
         Route::post('signin', [AdminAuth::class, 'signin']);

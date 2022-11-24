@@ -18,7 +18,9 @@ class CategoryResource extends JsonResource
         return [
             'id' => $this->{Category::COL_ID},
             'name' => $this->{Category::COL_NAME},
-            'childs' => $this->when($this->{Category::COL_PARENT} == null, $this->collection($this->childs)),
+            'products'=>$this->products()->count(),
+            // 'childs' => $this->when($this->{Category::COL_PARENT} == null, $this->collection($this->childs)),
+            'status' => $this->{Category::COL_STATUS},
         ];
     }
 }

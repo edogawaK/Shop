@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Private;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Public\UserResource;
 use App\Models\User;
 use App\Repositories\UserRepository;
 use Illuminate\Http\Request;
@@ -17,7 +18,13 @@ class UserController extends Controller
     public function index()
     {
         $userRepository = new UserRepository();
-        // $userRepository->getUsers() / '';
+        $users = $userRepository->getUsers([]);
+        return $this->response([
+            'data' => UserResource::collection($users),
+            'other' => [
+                'total' => $users->total(),
+            ],
+        ]);
     }
 
     /**
@@ -40,7 +47,7 @@ class UserController extends Controller
     public function show($id)
     {
         $userRepository = new UserRepository();
-        $userRepository->getUser(id:0);
+        $userRepository->getUser(id: 0);
     }
 
     /**

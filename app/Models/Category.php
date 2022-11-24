@@ -18,7 +18,9 @@ class Category extends Model
     public $table = "category";
     public $primaryKey = self::COL_ID;
     public $timestamps = false;
-    public $guarded = [];
+    public $fillable = [
+        self::COL_NAME,
+    ];
 
     public function products()
     {

@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Locate extends Model
 {
-    use HasFactory, SoftDeletes;
+    use HasFactory;
 
     const COL_ID = 'locate_id';
     const COL_CITY = 'locate_city';

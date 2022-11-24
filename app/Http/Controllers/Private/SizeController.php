@@ -55,7 +55,11 @@ class SizeController extends Controller
      */
     public function show($id)
     {
-        //
+        $sizeRepository = new SizeRepository();
+        $size = $sizeRepository->getSize($id);
+        return $this->response([
+            'data' => new SizeResource($size),
+        ]);
     }
 
     /**
@@ -71,7 +75,7 @@ class SizeController extends Controller
         $requestData = $request->convert();
 
         $sizeRepository->updateSize($id, $requestData);
-        $size=$sizeRepository->getSize($id);
+        $size = $sizeRepository->getSize($id);
         return $this->response([
             'data' => new SizeResource($size),
         ]);

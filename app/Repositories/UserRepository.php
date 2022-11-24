@@ -30,11 +30,10 @@ class UserRepository
         $query = new User();
 
         $query = $this->attachFilter($query, $option['filters'] ?? null);
-        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode']);
+        $query = $this->attachSort($query, $option['sort'] ?? null, $option['sortMode'] ?? 'asc');
 
         $users = User::paginate($this->pageSize);
         return $users;
-
     }
 
     public function getUser($id)
@@ -102,15 +101,13 @@ class UserRepository
                 $tokenVerify = $user->createToken($this->tokenVerify, $this->abilityVerify)->plainTextToken;
 
                 $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify);
-
-            } catch (\Illuminate\Database\QueryException$e) {
+            } catch (\Illuminate\Database\QueryException $e) {
 
                 $errorCode = $e->errorInfo[1];
                 if ($errorCode == 1062) {
                     throw new Error(...UserException::EmailExisted);
                 }
                 throw new Error(...AuthException::SignupFail);
-
             }
 
             return true;

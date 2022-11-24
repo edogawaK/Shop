@@ -54,7 +54,11 @@ class CategoryController extends Controller
      */
     public function show($id)
     {
-        //
+        $categoryRepository = new CategoryRepository();
+        $categories = $categoryRepository->getCategory($id);
+        return $this->response([
+            'data' => new CategoryResource($categories),
+        ]);
     }
 
     /**
