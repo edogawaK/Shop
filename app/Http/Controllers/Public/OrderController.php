@@ -81,7 +81,11 @@ class OrderController extends Controller
      */
     public function update(Request $request, $id)
     {
-        //
+        $orderRepository = new OrderRepository();
+        $orderRepository->updateOrderStatus($id, 0);
+        return $this->response([
+            'data' => true,
+        ]);
     }
 
     /**
