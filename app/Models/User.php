@@ -36,6 +36,7 @@ class User extends Authenticatable
         self::COL_EMAIL,
         self::COL_LOCATE,
         self::COL_VERIFY,
+        self::COL_STATUS,
     ];
 
     protected $hidden = [

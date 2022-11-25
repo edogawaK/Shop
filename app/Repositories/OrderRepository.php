@@ -15,9 +15,10 @@ class OrderRepository
     use Effects;
 
     const CANCEL_STATUS = 0;
-    const PREPARE_STATUS = 1;
-    const DELIVERY_STATUS = 2;
-    const RECEIVE_STATUS = 3;
+    const WAIT_STATUS = 1;
+    const PREPARE_STATUS = 2;
+    const DELIVERY_STATUS = 3;
+    const RECEIVE_STATUS = 4;
 
     public $pageSize = 10;
 
@@ -128,6 +129,11 @@ class OrderRepository
     {
         $order = Order::find($id);
         $order->{Order::COL_STATUS} = $status;
+        if ($id == self::RECEIVE_STATUS) {
+            $order->{Order::COL_RECEIVE} = now();
+        } else {
+            $order->{Order::COL_RECEIVE} = null;
+        }
         $order->save();
         return $order;
     }
@@ -160,5 +166,20 @@ class OrderRepository
             return $order;
         }
         throw new Error('Order khong ton tai', 404);
+    }
+    public function statistic()
+    {
+        $orders = Order::where(Order::COL_STATUS, 4)->get();
+        $data = $orders->groupBy(Order::COL_RECEIVE);
+        $result = [];
+        foreach ($data as $date => $orders) {
+            $key = date_format(date_create($date, timezone_open("Europe/Oslo")), 'd-m-Y');
+            $total = 0;
+            foreach ($orders as $order) {
+                $total += $order->{Order::COL_TOTAL};
+            }
+            $result[$key] = $total;
+        }
+        return $result;
     }
 }

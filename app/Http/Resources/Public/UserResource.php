@@ -21,9 +21,9 @@ class UserResource extends JsonResource
             'name' => $this->{User::COL_NAME},
             'email' => $this->{User::COL_EMAIL},
             'phone' => $this->locates->{Locate::COL_PHONE},
+            'address' => $this->locates->{Locate::COL_STREET},
             'status' => $this->{User::COL_STATUS},
             'token' => $this->when($this->token, $this->token),
         ];
     }
-
 }

@@ -52,4 +52,9 @@ class Order extends Model
     {
         return $this->hasMany(Rate::class, Rate::COL_ORDER, self::COL_ID);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class, self::COL_USER, User::COL_ID);
+    }
 }

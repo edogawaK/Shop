@@ -7,6 +7,7 @@ use App\Http\Controllers\Private\OrderController;
 use App\Http\Controllers\Private\ProductController;
 use App\Http\Controllers\Private\SaleController;
 use App\Http\Controllers\Private\SizeController;
+use App\Http\Controllers\Private\StatisticController;
 use App\Http\Controllers\Private\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -23,14 +24,12 @@ use Illuminate\Support\Facades\Route;
 
 //---------------------------------------------private route
 Route::group(['prefix' => 'admin'], function () {
-    Route::apiResource('products.images', ImageController::class)->parameters([
-        'products'=>'productId',
-        'images'=>'id',
-    ]);
+    Route::apiResource('images', ImageController::class);
     Route::apiResource('products', ProductController::class);
     Route::apiResource('categories', CategoryController::class);
     Route::apiResource('sizes', SizeController::class);
     Route::apiResource('orders', OrderController::class);
+    Route::apiResource('statistic', StatisticController::class)->only(['index']);
     Route::apiResource('users', UserController::class);
     // Route::apiResource('profile', UserController::class)->only(['show', 'update']);
     Route::group(['prefix' => 'auth'], function () {
@@ -38,5 +37,4 @@ Route::group(['prefix' => 'admin'], function () {
         // Route::post('forgot', [AuthController::class, 'forgot']);
         // Route::put('reset', [AuthController::class, 'reset']);
     });
-
 });

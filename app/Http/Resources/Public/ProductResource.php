@@ -30,14 +30,10 @@ class ProductResource extends JsonResource
                 $saleRepository = new SaleRepository();
                 return $saleRepository->getSalePrice($this->{Product::COL_ID});
             }),
-            'avt' => $this->when($this->{Product::COL_AVT}, function () {
-                $imageRepository = new ImageRepository();
-                $image = $imageRepository->getImageModel($this->{Product::COL_AVT});
-                return $image->{Image::COL_LINK};
-            }),
+            'avt' => $this->renderAvt(),
             'status' => $this->{Product::COL_STATUS},
             'categoryId' => $this->{Product::COL_CATEGORY},
-            'category' => $this->category->{Category::COL_NAME},
+            // 'category' => $this->category->{Category::COL_NAME},
 
             //detail
             $this->mergeWhen($this->detail, [
@@ -56,6 +52,15 @@ class ProductResource extends JsonResource
             'total' => $this->when($this->total, $this->total),
             'pageSize' => $this->when($this->per_page, $this->per_page),
         ];
+    }
+
+    private function renderAvt()
+    {
+        $avt = $this->images;
+        if (count($avt)) {
+            return $avt[0]->{Image::COL_LINK};
+        }
+        return null;
     }
 
     private function shouldDetail($request)

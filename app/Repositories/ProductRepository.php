@@ -2,6 +2,7 @@
 
 namespace App\Repositories;
 
+use App\Models\Image;
 use App\Models\Product;
 use App\Models\Size;
 use Error;
@@ -41,9 +42,16 @@ class ProductRepository
     {
         return DB::transaction(function () use ($data) {
             $product = Product::create($data);
-
+            $imageReposiory = new ImageRepository();
             foreach ($data['sizes'] as $size) {
                 $product->sizes()->attach($size[Size::COL_ID], ['quantity' => $size['quantity']]);
+            }
+
+            foreach ($data['images'] as $image) {
+                $imageReposiory->storeImage([
+                    Image::COL_PRODUCT => $product->{Product::COL_ID},
+                    'image' => $image,
+                ]);
             }
 
             return $product;

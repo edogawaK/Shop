@@ -45,8 +45,8 @@ class ImageRepository
 
     public function uploadImage($image)
     {
-        $sourceData=base64_encode(file_get_contents($image));
-        $response=Http::attach('source', $sourceData)->post(self::EXTERNAL_HOST, ['key'=>self::EXTERNAL_KEY])->json();
+        // $sourceData=base64_encode(file_get_contents($image));
+        $response=Http::attach('source', $image)->post(self::EXTERNAL_HOST, ['key'=>self::EXTERNAL_KEY])->json();
         return $response['image']['url'];
     }
 

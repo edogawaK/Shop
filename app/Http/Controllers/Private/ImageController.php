@@ -73,18 +73,19 @@ class ImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($productId, $id)
+    public function destroy($id)
     {
-        $productRepository = new ProductRepository();
+        // $productRepository = new ProductRepository();
         $imageRepository = new ImageRepository();
 
-        $product = $productRepository->getProductModel($productId);
-        if ($product->{Product::COL_AVT} == $id) {
-            $product->{Product::COL_AVT} = null;
-            $product->save();
-        }
+        // $product = $productRepository->getProductModel($productId);
+        // if ($product->{Product::COL_AVT} == $id) {
+        //     $product->{Product::COL_AVT} = null;
+        //     $product->save();
+        // }
 
         $imageRepository->destroyImage($id);
+
 
         return $this->response([
             'data' => true,

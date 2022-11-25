@@ -27,7 +27,7 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name' => 'bail|required',
-            'parent' => 'bail|int|string',
+            // 'parent' => 'bail|int|string',
         ];
     }
 
@@ -35,7 +35,7 @@ class StoreCategoryRequest extends FormRequest
     {
         return [
             'name' => 'Tên Category không hợp lệ',
-            'parent' => 'Category parent không hợp lệ',
+            // 'parent' => 'Category parent không hợp lệ',
         ];
     }
 }

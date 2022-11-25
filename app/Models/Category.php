@@ -20,6 +20,7 @@ class Category extends Model
     public $timestamps = false;
     public $fillable = [
         self::COL_NAME,
+        self::COL_PARENT,
     ];
 
     public function products()

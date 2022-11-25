@@ -7,6 +7,7 @@ use App\Http\Requests\Private\Category\StoreCategoryRequest;
 use App\Http\Requests\Private\Category\UpdateCategoryRequest;
 use App\Http\Requests\Public\Cart\StoreCartRequest;
 use App\Http\Resources\Public\CategoryResource;
+use App\Models\Category;
 use App\Repositories\CategoryRepository;
 use Illuminate\Http\Request;
 
@@ -26,7 +27,7 @@ class CategoryController extends Controller
         $categoryRepository = new CategoryRepository();
         $categories = $categoryRepository->getCategories();
         return $this->response([
-            'data' => CategoryResource::collection($categories),
+            'data' => CategoryResource::collection(Category::where(Category::COL_PARENT, '<>', NULL)->get()),
         ]);
     }
 
@@ -40,7 +41,7 @@ class CategoryController extends Controller
     {
         $categoryRepository = new CategoryRepository();
         $requestData = $request->convert();
-        $category = $categoryRepository->storeCategory($requestData);
+        $category = $categoryRepository->storeCategory([...$requestData, Category::COL_PARENT => 1]);
         return $this->response([
             'data' => new CategoryResource($category),
         ]);

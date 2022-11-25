@@ -47,7 +47,8 @@ class UserController extends Controller
     public function show($id)
     {
         $userRepository = new UserRepository();
-        $userRepository->getUser(id: 0);
+        $user = $userRepository->getUser($id);
+        return new UserResource($user);
     }
 
     /**
@@ -64,7 +65,7 @@ class UserController extends Controller
             User::COL_STATUS => $request->status,
         ]);
         $user = $userRepository->getUserModel($id);
-        return $user;
+        return new UserResource($user);
     }
 
     /**

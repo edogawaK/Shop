@@ -19,10 +19,12 @@ class OrderResource extends JsonResource
     {
         return [
             'id' => $this->{Order::COL_ID},
+            'user' => new UserResource($this->user),
             'date' => $this->{Order::COL_DATE},
             'receive' => $this->{Order::COL_RECEIVE},
             'total' => $this->{Order::COL_TOTAL},
             'status' => $this->getOrderStatus(),
+            'statusId' => $this->{Order::COL_STATUS},
             'address' => $this->locate->{Locate::COL_STREET},
             'detail' => $this->getOrderProducts(),
         ];
@@ -36,11 +38,18 @@ class OrderResource extends JsonResource
     private function getOrderStatus()
     {
         switch ($this->{Order::COL_STATUS}) {
-        case 0:return 'Đã hủy';
-        case 1:return 'Đang chuẩn bị hàng';
-        case 2:return 'Đang giao';
-        case 3:return 'Đã nhận';
-        default:return 'Không thể xác định';
+            case 0:
+                return 'Đã hủy';
+            case 1:
+                return 'Chờ xác nhận';
+            case 2:
+                return 'Đang chuẩn bị hàng';
+            case 3:
+                return 'Đang giao';
+            case 4:
+                return 'Đã nhận';
+            default:
+                return 'Đơn hàng gặp sự cố';
         }
     }
 }
