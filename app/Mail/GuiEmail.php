@@ -9,15 +9,15 @@ use Illuminate\Queue\SerializesModels;
 class GuiEmail extends Mailable
 {
     use Queueable, SerializesModels;
-
+    private $flag;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct($flag=false)
     {
-        //
+        $this->flag=$flag;
     }
 
     /**

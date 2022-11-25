@@ -9,15 +9,16 @@ use Illuminate\Queue\SerializesModels;
 class AuthMail extends Mailable
 {
     use Queueable, SerializesModels;
-    public $verifyToken;
+    public $verifyToken, $domain;
     /**
      * Create a new message instance.
      *
      * @return void
      */
-    public function __construct($verifyToken)
+    public function __construct($verifyToken, $domain)
     {
         $this->verifyToken = $verifyToken;
+        $this->domain = $domain;
     }
 
     /**
@@ -27,6 +28,6 @@ class AuthMail extends Mailable
      */
     public function build()
     {
-        return $this->view('auth', ['code' => $this->verifyToken]);
+        return $this->view('auth', ['code' => $this->domain . '?token=' . $this->verifyToken]);
     }
 }
