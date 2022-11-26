@@ -100,7 +100,7 @@ class UserRepository
                 $user = $this->storeUser($data);
                 $tokenVerify = $user->createToken($this->tokenVerify, $this->abilityVerify)->plainTextToken;
 
-                $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify, 'http://localhost:3000/verify-email');
+                $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify, 'http://localhost:3000/verify');
             } catch (\Illuminate\Database\QueryException $e) {
 
                 $errorCode = $e->errorInfo[1];
@@ -136,7 +136,7 @@ class UserRepository
         $user = User::where(User::COL_EMAIL, $email)->get()[0];
         if ($user) {
             $tokenVerify = $user->createToken($this->tokenVerify, $this->abilityVerify)->plainTextToken;
-            $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify, 'http://localhost:3000/forgot-password');
+            $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify, 'http://localhost:3000/resetpassword');
         } else {
             throw new Error(...AuthException::EmailNotExist);
         }

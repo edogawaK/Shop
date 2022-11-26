@@ -15,7 +15,7 @@ class AuthController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth:sanctum', 'abilities:verify'])->only(['verifyEmail', 'resetPassword']);
+        $this->middleware(['auth:sanctum', 'abilities:verify'])->only(['verifyAccount', 'resetPassword']);
         $this->middleware(['auth:sanctum', 'abilities:user'])->only(['logout']);
     }
 
