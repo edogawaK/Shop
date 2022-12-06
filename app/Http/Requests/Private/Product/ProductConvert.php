@@ -17,7 +17,7 @@ trait ProductConvert
             Product::COL_PRICE => $this->price,
             Product::COL_SALE => $this->saleId,
             'images' => array_map(function ($item) {
-                return $item['rawFile'];
+                return $item['rawFile']??null;
             }, $this->images),
             'sizes' => array_map(function ($item) {
                 return [

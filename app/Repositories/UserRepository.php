@@ -97,10 +97,11 @@ class UserRepository
 
                 $locate = Locate::create($data);
                 $data[Locate::COL_ID] = $locate->{Locate::COL_ID};
+                $data[User::COL_STATUS] = 1;
                 $user = $this->storeUser($data);
                 $tokenVerify = $user->createToken($this->tokenVerify, $this->abilityVerify)->plainTextToken;
 
-                $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify, 'http://localhost:3000/verify');
+                // $this->sendEmailVerify($user->{User::COL_EMAIL}, $tokenVerify, 'http://localhost:3000/verify');
             } catch (\Illuminate\Database\QueryException $e) {
 
                 $errorCode = $e->errorInfo[1];

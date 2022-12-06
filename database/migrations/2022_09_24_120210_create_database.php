@@ -48,7 +48,7 @@ return new class extends Migration
             $table->increments('user_id');
             $table->string('user_name');
             $table->string('user_password');
-            $table->string('user_email')->unique();
+            $table->string('user_email');
             $table->integer('user_status')->default(0);
             $table->double('user_point')->default(100);
             $table->double('user_verify')->nullable();
