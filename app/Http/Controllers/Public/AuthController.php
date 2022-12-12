@@ -19,7 +19,7 @@ class AuthController extends Controller
         $this->middleware(['auth:sanctum', 'abilities:user'])->only(['logout']);
     }
 
-    public function signin(SigninRequest $request)
+    public function signin(Request $request)
     {
         $userRepository = new UserRepository();
         return $this->response(['data' => $userRepository->signin($request->email, $request->password)]);
